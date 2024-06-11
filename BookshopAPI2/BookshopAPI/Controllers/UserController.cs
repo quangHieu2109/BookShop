@@ -10,21 +10,21 @@ using System.Text;
 
 namespace BookshopAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class UserController : Controller
     {
         private IConfiguration configuration = new MyDbContextService().GetConfiguration();
        private MyDbContext myDbContext = new MyDbContextService().GetMyDbContext();
 
-        [HttpGet]
+        [HttpGet("getAllUser")]
         [Authorize(Roles ="ADMIN")]
         public IActionResult getAll()
         {
             
             return Ok(this.User.FindFirstValue("UserName"));
         }
-        [HttpPost("/login")]
+        [HttpPost("login")]
         public IActionResult login(UserLogin userLogin) {
                var user = myDbContext.Users.SingleOrDefault(x => x.username == userLogin.username);
             if (user == null)
@@ -49,7 +49,7 @@ namespace BookshopAPI.Controllers
                 }
             }
         }
-        [HttpPost("/register")]
+        [HttpPost("register")]
         public IActionResult register(UserRegister userRegister) {
             var user = myDbContext.Users.SingleOrDefault(x => x.username == userRegister.username);
             if (user != null) {
