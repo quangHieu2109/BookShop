@@ -34,10 +34,10 @@ namespace BookshopAPI.Controllers
             }
             var cartItems = (from ci in myDbContext.CartItems
                             where ci.cartId == cart.id
-                            select new CartItem{
+                            select new CartItemResponse{
                             id = ci.id,
                             cartId = ci.cartId,
-                            productId = ci.productId,
+                            product = myDbContext.Products.SingleOrDefault(x => x.id == ci.productId),
                             quantity= ci.quantity,
                             createdAt = ci.createdAt,
                             updatedAt = ci.updatedAt
@@ -159,6 +159,6 @@ namespace BookshopAPI.Controllers
     }
     public class CartResponse : Cart
     {
-        public List<CartItem> CartItems { get; set; }
+        public List<CartItemResponse> CartItems { get; set; }
     }
 }
