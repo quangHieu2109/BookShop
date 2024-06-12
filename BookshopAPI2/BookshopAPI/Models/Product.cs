@@ -27,6 +27,11 @@ namespace BookshopAPI.Models
         public DateTime? updatedAt { get; set; }
         public DateTime? startsAt {  get; set; }
         public DateTime? endsAt {  get; set; }
+
+        public Product convert(Product p)
+        {
+            return p;
+        }
     }
     public class ProductRecommended
     {

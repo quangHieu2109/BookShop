@@ -1,7 +1,9 @@
 ﻿using BookshopAPI.Models;
 using BookshopAPI.Service;
+using Google.Protobuf.Collections;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 using System.Security.Claims;
 
 namespace BookshopAPI.Controllers
@@ -12,10 +14,20 @@ namespace BookshopAPI.Controllers
     {
         private IConfiguration configuration = new MyDbContextService().GetConfiguration();
         private MyDbContext myDbContext = new MyDbContextService().GetMyDbContext();
+        private ResponeMessage responeMessage = new ResponeMessage();
         [HttpGet("getAllProduct")]
         public IActionResult getAllProduct()
         {
-            return Ok(myDbContext.Products);
+            var productRatings = myDbContext.ProductReviews
+                     .GroupBy(pr => pr.productId)
+                     .Select(g => new ProductRecommended
+                     {
+                         Product = myDbContext.Products.Single(x => x.id == g.Key),
+                         rating = Math.Round(g.Average(pr => pr.ratingScore), 2)
+                     })
+                     
+                     .ToList();
+            return Ok(productRatings);
         }
         [HttpGet("getWishList")]
         [Authorize]
@@ -33,7 +45,10 @@ namespace BookshopAPI.Controllers
             }
             if(products.Count > 0)
             {
-                return Ok(products);
+                var result = (from r in GetProductRecommended()
+                             join p in products on r.Product.id equals p.id
+                             select r).ToList();
+                return Ok(result);
             }
             return NotFound();
 
@@ -45,7 +60,10 @@ namespace BookshopAPI.Controllers
             x.name.Contains(name)).ToList();
             if (products != null)
             {
-                return Ok(products);
+                var result = (from r in GetProductRecommended()
+                              join p in products on r.Product.id equals p.id
+                              select r).ToList();
+                return Ok(result);
             }
             else
             {
@@ -59,13 +77,17 @@ namespace BookshopAPI.Controllers
             var category_product = myDbContext.Product_Categories.SingleOrDefault(x => x.productId == productId);
             if (category_product != null)
             {
-                var products = from p in myDbContext.Products
+                var products = (from p in myDbContext.Products
                                join c in myDbContext.Product_Categories on p.id equals c.productId
                                where c.categoryId == category_product.categoryId
-                               select  p ;
+                               select  new Product().convert(p)).ToList() ;
+                
                 if (products != null)
                 {
-                    return Ok(products);
+                    var result = (from r in GetProductRecommended()
+                                  join p in products on r.Product.id equals p.id
+                                  select r).ToList();
+                    return Ok(result);
                 }
             }
             return NotFound();
@@ -79,10 +101,13 @@ namespace BookshopAPI.Controllers
             var products = from p in myDbContext.Products
                             join c in myDbContext.Product_Categories on p.id equals c.productId
                             where c.categoryId == categoryId
-                            select new { p };
+                            select  p ;
             if (products != null)
             {
-                return Ok(products);
+                var result = (from r in GetProductRecommended()
+                              join p in products on r.Product.id equals p.id
+                              select r).ToList();
+                return Ok(result);
             }
             
             return NotFound();
@@ -96,10 +121,13 @@ namespace BookshopAPI.Controllers
                 var products = from p in myDbContext.Products
                                join c in myDbContext.Product_Categories on p.id equals c.productId
                                where c.categoryId == category.id
-                               select new { p };
+                               select p ;
                 if (products != null)
                 {
-                    return Ok(products);
+                    var result = (from r in GetProductRecommended()
+                                  join p in products on r.Product.id equals p.id
+                                  select r).ToList();
+                    return Ok(result);
                 }
             }
 
@@ -118,16 +146,16 @@ namespace BookshopAPI.Controllers
                 var rs = myDbContext.SaveChanges();
                 if (rs > 0)
                 {
-                    return Ok(_product);
+                    return Ok(responeMessage.response200(_product));
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Có lỗi từ server, vui lòng thử lại sau!");
+                    return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
                 }
             }
             else
             {
-                return NotFound("Id của sản phẩm trên không tồn tại");
+                return NotFound(responeMessage.response404);
             }
 
 
@@ -157,11 +185,11 @@ namespace BookshopAPI.Controllers
                 int rs = myDbContext.SaveChanges();
                 if (rs > 0)
                 {
-                    return Ok(wishlist);
+                    return Ok(responeMessage.response200(wishlist));
                 }
-                return StatusCode(StatusCodes.Status500InternalServerError, "Có lỗi từ server, vui lòng thử lại sau!");
+                return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
             }
-            return BadRequest("Sản phẩm đã có trong danh sách yêu thích!");
+            return BadRequest(responeMessage.response400);
 
         }
 
@@ -184,14 +212,83 @@ namespace BookshopAPI.Controllers
                 int rs = myDbContext.SaveChanges();
                 if (rs > 0)
                 {
-                    return Ok();
+                    return Ok(responeMessage.response200);
                 }
-                return StatusCode(StatusCodes.Status500InternalServerError, "Có lỗi từ server, vui lòng thử lại sau!");
+                return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
             }
-            return BadRequest("Sản phẩm không có trong danh sách yêu thích!");
+            return BadRequest(responeMessage.response404);
 
         }
-        
+        [HttpGet("getByOrderRating")]
+        public IActionResult getRecommend()
+        {
+            var productRatings = myDbContext.ProductReviews
+                     .GroupBy(pr => pr.productId)
+                     .Select(g => new ProductRecommended
+                     {
+                         Product = myDbContext.Products.Single(x => x.id == g.Key),
+                         rating = Math.Round(g.Average(pr => pr.ratingScore), 2)
+                     })
+                     .OrderByDescending(x => x.rating)
+                     .Take(10)
+                     .ToList();
+            return Ok(productRatings);
+        }
+        [HttpGet("getRecommendByOrderRating/productId={productId}")]
+        public IActionResult getRecommendByOrderRating(long productId)
+        {
+            var category_product = myDbContext.Product_Categories.SingleOrDefault(x => x.productId == productId);
+            var productRatings = myDbContext.ProductReviews
+                     .GroupBy(pr => pr.productId)
+                     .Select(g => new ProductRecommended
+                     {
+                         Product = myDbContext.Products.Single(x => x.id == g.Key),
+                         rating = Math.Round(g.Average(pr => pr.ratingScore), 2)
+                     })
+                     
+                     .OrderByDescending(x => x.rating)
+                     .Take(10)
+                     .ToList();
+            var productRatings2 = from pr in productRatings
+                                  where (myDbContext.Product_Categories.Single(x => x.productId == pr.Product.id).categoryId == category_product.categoryId)
+                                  select pr;
+            return Ok(productRatings2);
+        }
 
+        [HttpGet("getTopSell")]
+        public IActionResult getTopSell()
+        {
+            var products = myDbContext.OrderItems
+                     .GroupBy(pr => pr.productId)
+                     .Select(g => new 
+                     {
+                         Product = myDbContext.Products.Single(x => x.id == g.Key),
+                         Quantity = g.Sum(pr => pr.quantity),
+                         
+                     })
+                     .OrderByDescending(x => x.Quantity)
+                     .Take(10)
+                     .ToList();
+            var result = (from r in GetProductRecommended()
+                          join p in products on r.Product.id equals p.Product.id
+                          select r).ToList();
+            return Ok(result);
+        }
+
+        
+        public List<ProductRecommended> GetProductRecommended()
+        {
+            var productRatings = myDbContext.ProductReviews
+                    .GroupBy(pr => pr.productId)
+                    .Select(g => new ProductRecommended
+                    {
+                        Product = myDbContext.Products.Single(x => x.id == g.Key),
+                        rating = Math.Round(g.Average(pr => pr.ratingScore), 2)
+                    })
+                    .OrderByDescending(x => x.rating)
+                    .Take(10)
+                    .ToList();
+            return (productRatings);
+        }
     }
 }
