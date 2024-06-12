@@ -96,7 +96,7 @@ namespace BookshopAPI.Controllers
         }
 
 
-        [HttpGet("getProductByCategory{Id}")]
+        [HttpGet("getProduct/categoryId={categoryId}")]
         public IActionResult getProductByCategoryId(long categoryId)
         {
             
@@ -116,7 +116,7 @@ namespace BookshopAPI.Controllers
             
             return NotFound();
         }
-        [HttpGet("getProductByCategory{Name}")]
+        [HttpGet("getProduct/categoryName={categoryName}")]
         public IActionResult getProductByCategoryName(String categoryName)
         {
             var category = myDbContext.Categories.FirstOrDefault(x => x.name ==  categoryName);
@@ -176,10 +176,14 @@ namespace BookshopAPI.Controllers
             var product = myDbContext.Products.SingleOrDefault(x => x.id == productId);
             if (product == null)
             {
-                return BadRequest("Mã sản phẩm không chính xác");
+                return BadRequest(responeMessage.response400("Mã sản phẩm không chính xác"));
             }
             
-            if (wishlist == null)
+            if (wishlist != null)
+            {
+                return BadRequest(responeMessage.response400("Sản phẩm đã có trong danh sách yêu thích"));
+            }
+            else
             {
                 wishlist = new WishListItem
                 {
@@ -188,14 +192,14 @@ namespace BookshopAPI.Controllers
                     createdAt = DateTime.Now
                 };
                 myDbContext.WishListItems.Add(wishlist);
-                int rs = myDbContext.SaveChanges();
+                int rs =  myDbContext.SaveChanges();
                 if (rs > 0)
                 {
                     return Ok(responeMessage.response200(wishlist));
                 }
                 return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
             }
-            return BadRequest(responeMessage.response400);
+            
 
         }
 
