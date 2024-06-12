@@ -28,4 +28,9 @@ namespace BookshopAPI.Models
         public DateTime? startsAt {  get; set; }
         public DateTime? endsAt {  get; set; }
     }
+    public class ProductRecommended
+    {
+        public Product Product { get; set; }
+        public double rating { get; set; }
+    }
 }

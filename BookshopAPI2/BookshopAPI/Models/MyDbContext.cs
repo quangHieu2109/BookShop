@@ -25,6 +25,8 @@ namespace BookshopAPI.Models
         public DbSet<Product_Category> Product_Categories{ get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<WishListItem> WishListItems {  get; set; }
+        public DbSet<ProductReview> ProductReviews { get; set; }
 
     }
 }
