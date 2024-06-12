@@ -14,6 +14,7 @@ namespace BookshopAPI.Controllers
     {
         private IConfiguration configuration = new MyDbContextService().GetConfiguration();
         private MyDbContext myDbContext = new MyDbContextService().GetMyDbContext();
+        private ResponeMessage responeMessage = new ResponeMessage();   
         [HttpGet]
         [Authorize]
         public IActionResult getCart()
@@ -80,9 +81,9 @@ namespace BookshopAPI.Controllers
                     myDbContext.CartItems.Add(cartItem);
                     myDbContext.SaveChanges();
                 }
-                return Ok(cartItem);
+                return Ok(responeMessage.response200(cartItem));
             }
-            return BadRequest("Sản phẩm không tồn tại");
+            return BadRequest(responeMessage.response400);
         }
         [HttpPost("addCartItemPName={productName}")]
         [Authorize]
@@ -111,9 +112,9 @@ namespace BookshopAPI.Controllers
                     myDbContext.CartItems.Add(cartItem);
                     myDbContext.SaveChanges();
                 }
-                return Ok(cartItem);
+                return Ok(responeMessage.response200(cartItem));
             }
-            return BadRequest("Sản phẩm không tồn tại");
+            return BadRequest(responeMessage.response400);
         }
 
         [HttpPut("updateCartItemId={cartItemId}")]
@@ -129,11 +130,11 @@ namespace BookshopAPI.Controllers
                 int rs = myDbContext.SaveChanges();
                 if (rs > 0)
                 {
-                    return Ok(cartItem);
+                    return Ok(responeMessage.response200(cartItem));
                 }
-                return StatusCode(StatusCodes.Status500InternalServerError, "Có lỗi ở server, vui lòng thử lại sau");
+                return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
             }
-            return BadRequest("CartItem không tồn tại");
+            return BadRequest(responeMessage.response400);
         }
 
         [HttpDelete("deleteCartItemId={id}")]
@@ -149,11 +150,11 @@ namespace BookshopAPI.Controllers
                 int rs = myDbContext.SaveChanges();
                 if (rs > 0)
                 {
-                    return Ok("Xóa thành công");
+                    return Ok(responeMessage.response200);
                 }
-                return StatusCode(StatusCodes.Status500InternalServerError, "Có lỗi ở server, vui lòng thử lại sau");
+                return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
             }
-            return BadRequest("CartItem không tồn tại");
+            return BadRequest(responeMessage.response400);
         }
 
     }

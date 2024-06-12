@@ -16,6 +16,7 @@ namespace BookshopAPI.Controllers
     {
         private IConfiguration configuration = new MyDbContextService().GetConfiguration();
        private MyDbContext myDbContext = new MyDbContextService().GetMyDbContext();
+        private ResponeMessage responeMessage = new ResponeMessage();
 
         [HttpGet("getAllUser")]
         [Authorize(Roles ="ADMIN")]
@@ -29,23 +30,18 @@ namespace BookshopAPI.Controllers
                var user = myDbContext.Users.SingleOrDefault(x => x.username == userLogin.username);
             if (user == null)
             {
-                return BadRequest("Username không chính xác");
+                return BadRequest(responeMessage.response400("Tài khoản không chính xác"));
             }
             else
             {
                 if(user.password != Hash(userLogin.password))
                 {
-                    return BadRequest("Password không chính xác");
+                    return BadRequest(responeMessage.response400("Mật khẩu không chính xác"));
                 }
                 else
                 {
                     var accessToken = generateToken(user);
-                    return Ok(new
-                    {
-                        Success = true,
-                        Message = "Đăng nhập thành công!",
-                        Data = accessToken
-                    }) ;
+                    return Ok(responeMessage.response200(accessToken, "Đăng nhập thành công")) ;
                 }
             }
         }
@@ -84,11 +80,11 @@ namespace BookshopAPI.Controllers
                         myDbContext.Carts.Add(cart);
                         myDbContext.SaveChanges();
                         
-                        return Ok(user);
+                        return Ok(responeMessage.response200(user, "Đăng ký thành công"));
                     }
                     else
                     {
-                        return StatusCode(StatusCodes.Status500InternalServerError, "Có lỗi từ server, vui lòng thử lại sau!");
+                        return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
                     }
                 }
             }

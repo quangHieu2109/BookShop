@@ -13,6 +13,7 @@ namespace BookshopAPI.Controllers
     {
         private IConfiguration configuration = new MyDbContextService().GetConfiguration();
         private MyDbContext myDbContext = new MyDbContextService().GetMyDbContext();
+        private ResponeMessage responeMessage = new ResponeMessage();
         [HttpGet("getAllOrders")]
         [Authorize(Roles ="ADMIN, EMPLOYEE")]
         public IActionResult getAll()
@@ -75,7 +76,7 @@ namespace BookshopAPI.Controllers
             int rs = myDbContext.SaveChanges();
             if (rs <= 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Có lỗi từ server, vui lòng thử lại sua!");
+                return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
             }
             List<long> cartItemId = orderRequest.cartItemIds;
             foreach(var id  in cartItemId)
@@ -101,7 +102,7 @@ namespace BookshopAPI.Controllers
                     }
                 }
             }
-            return Ok(order);
+            return Ok(responeMessage.response200(order, "Đặt hàng thành công"));
 
 
         }
@@ -115,28 +116,28 @@ namespace BookshopAPI.Controllers
             {
                 if(order.status == 3)
                 {
-                    return BadRequest("Không thể thay đổi trạng thái của đơn hàng đã hủy!");
+                    return BadRequest(responeMessage.response400("Không thể thay đổi trạng thái của đơn hàng đã hủy!"));
                 }
                 if(status >5 || status < 0)
                 {
-                    return BadRequest("Status mới không hợp lệ!");
+                    return BadRequest(responeMessage.response400("Status mới không hợp lệ!"));
                 }
                 if(order.status == status) {
-                    return BadRequest("Status mới bị trùng với status cũ!");
+                    return BadRequest(responeMessage.response400("Status mới bị trùng với status cũ!"));
 
                 }
                 order.status = status;
                 int rs =myDbContext.SaveChanges();
                 if(rs > 0)
                 {
-                    return Ok(order);
+                    return Ok(responeMessage.response200(order, "Cập nhật trạng thái đơn hàng thành công"));
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, "Có lỗi từ server, vui lòng thử lại sau!");
+                    return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
                 }
             }
-            return BadRequest("OrderId không chính xác!");
+            return BadRequest(responeMessage.response400("OrderId không chính xác!"));
         }
     }
 }

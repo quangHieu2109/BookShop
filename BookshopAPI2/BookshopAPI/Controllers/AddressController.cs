@@ -12,6 +12,7 @@ namespace BookshopAPI.Controllers
     {
         private IConfiguration configuration = new MyDbContextService().GetConfiguration();
         private MyDbContext myDbContext = new MyDbContextService().GetMyDbContext();
+        private ResponeMessage responeMessage = new ResponeMessage();   
         [HttpGet("getAddress")]
         [Authorize]
         public IActionResult getAddress()
@@ -38,10 +39,10 @@ namespace BookshopAPI.Controllers
             int rs =myDbContext.SaveChanges();
             if (rs > 0)
             {
-                return Ok(address);
+                return Ok(responeMessage.response200(address));
 
             }
-            return StatusCode(StatusCodes.Status500InternalServerError, "Có lỗi từ server, vui lòng thử lại sau!");
+            return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
 
         }
 

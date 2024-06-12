@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using System.Security.Claims;
+using System.Xml;
 
 namespace BookshopAPI.Controllers
 {
@@ -15,19 +16,18 @@ namespace BookshopAPI.Controllers
         private IConfiguration configuration = new MyDbContextService().GetConfiguration();
         private MyDbContext myDbContext = new MyDbContextService().GetMyDbContext();
         private ResponeMessage responeMessage = new ResponeMessage();
+        private ProductRating productRating = new ProductRating();
+
         [HttpGet("getAllProduct")]
         public IActionResult getAllProduct()
         {
-            var productRatings = myDbContext.ProductReviews
-                     .GroupBy(pr => pr.productId)
-                     .Select(g => new ProductRecommended
-                     {
-                         Product = myDbContext.Products.Single(x => x.id == g.Key),
-                         rating = Math.Round(g.Average(pr => pr.ratingScore), 2)
-                     })
-                     
-                     .ToList();
-            return Ok(productRatings);
+            var products = myDbContext.Products.ToList();
+            List<ProductRating> ProductRatings = new List<ProductRating>();
+            foreach (var product in products)
+            {
+                ProductRatings.Add(productRating.GetProductRating(product));
+            }
+            return Ok(ProductRatings);
         }
         [HttpGet("getWishList")]
         [Authorize]
@@ -37,18 +37,16 @@ namespace BookshopAPI.Controllers
             var wishlist = (from w in myDbContext.WishListItems
                            where w.userId == userId
                            select w).ToList();
-            List<Product> products = new List<Product>();
+            List<ProductRating> products = new List<ProductRating>();
             foreach(var wish in wishlist)
             {
-                products.Add(myDbContext.Products.SingleOrDefault(x=>x.id ==  wish.productId));
+                products.Add(productRating.GetProductRating(myDbContext.Products.SingleOrDefault(x => x.id == wish.productId)));
 
             }
             if(products.Count > 0)
             {
-                var result = (from r in GetProductRecommended()
-                             join p in products on r.Product.id equals p.id
-                             select r).ToList();
-                return Ok(result);
+                
+                return Ok(products);
             }
             return NotFound();
 
@@ -60,9 +58,11 @@ namespace BookshopAPI.Controllers
             x.name.Contains(name)).ToList();
             if (products != null)
             {
-                var result = (from r in GetProductRecommended()
-                              join p in products on r.Product.id equals p.id
-                              select r).ToList();
+                List<ProductRating> result = new List<ProductRating>();
+                foreach(var product in products)
+                {
+                    result.Add(productRating.GetProductRating(product));
+                }
                 return Ok(result);
             }
             else
@@ -84,9 +84,11 @@ namespace BookshopAPI.Controllers
                 
                 if (products != null)
                 {
-                    var result = (from r in GetProductRecommended()
-                                  join p in products on r.Product.id equals p.id
-                                  select r).ToList();
+                    List<ProductRating> result = new List<ProductRating>();
+                    foreach (var product in products)
+                    {
+                        result.Add(productRating.GetProductRating(product));
+                    }
                     return Ok(result);
                 }
             }
@@ -104,9 +106,11 @@ namespace BookshopAPI.Controllers
                             select  p ;
             if (products != null)
             {
-                var result = (from r in GetProductRecommended()
-                              join p in products on r.Product.id equals p.id
-                              select r).ToList();
+                List<ProductRating> result = new List<ProductRating>();
+                foreach (var product in products)
+                {
+                    result.Add(productRating.GetProductRating(product));
+                }
                 return Ok(result);
             }
             
@@ -124,9 +128,11 @@ namespace BookshopAPI.Controllers
                                select p ;
                 if (products != null)
                 {
-                    var result = (from r in GetProductRecommended()
-                                  join p in products on r.Product.id equals p.id
-                                  select r).ToList();
+                    List<ProductRating> result = new List<ProductRating>();
+                    foreach (var product in products)
+                    {
+                        result.Add(productRating.GetProductRating(product));
+                    }
                     return Ok(result);
                 }
             }
@@ -224,7 +230,7 @@ namespace BookshopAPI.Controllers
         {
             var productRatings = myDbContext.ProductReviews
                      .GroupBy(pr => pr.productId)
-                     .Select(g => new ProductRecommended
+                     .Select(g => new 
                      {
                          Product = myDbContext.Products.Single(x => x.id == g.Key),
                          rating = Math.Round(g.Average(pr => pr.ratingScore), 2)
@@ -240,7 +246,7 @@ namespace BookshopAPI.Controllers
             var category_product = myDbContext.Product_Categories.SingleOrDefault(x => x.productId == productId);
             var productRatings = myDbContext.ProductReviews
                      .GroupBy(pr => pr.productId)
-                     .Select(g => new ProductRecommended
+                     .Select(g => new 
                      {
                          Product = myDbContext.Products.Single(x => x.id == g.Key),
                          rating = Math.Round(g.Average(pr => pr.ratingScore), 2)
@@ -269,26 +275,61 @@ namespace BookshopAPI.Controllers
                      .OrderByDescending(x => x.Quantity)
                      .Take(10)
                      .ToList();
-            var result = (from r in GetProductRecommended()
-                          join p in products on r.Product.id equals p.Product.id
-                          select r).ToList();
+            List<Object> result = new List<Object>();
+            foreach (var product in products)
+            {
+                result.Add(new
+                {
+                    product= productRating.GetProductRating(product.Product).Product,
+                    quantity=product.Quantity,
+                    rating = productRating.GetProductRating(product.Product).rating
+                });
+            }
             return Ok(result);
         }
 
-        
-        public List<ProductRecommended> GetProductRecommended()
+        [HttpGet("getReleases")]
+        public IActionResult getReleases()
         {
-            var productRatings = myDbContext.ProductReviews
-                    .GroupBy(pr => pr.productId)
-                    .Select(g => new ProductRecommended
-                    {
-                        Product = myDbContext.Products.Single(x => x.id == g.Key),
-                        rating = Math.Round(g.Average(pr => pr.ratingScore), 2)
-                    })
-                    .OrderByDescending(x => x.rating)
-                    .Take(10)
-                    .ToList();
-            return (productRatings);
+            var products = myDbContext.Products
+                        
+                     .OrderByDescending(x => x.createdAt)
+                     .Take(10)
+                     .ToList();
+            List<Object> result = new List<Object>();
+            foreach (var product in products)
+            {
+                result.Add(productRating.GetProductRating(product));
+            }
+            return Ok(result);
         }
+
+        [HttpGet("getPerchased")]
+        [Authorize]
+        public IActionResult getPerchased()
+        {
+            long userId = long.Parse(this.User.FindFirstValue("Id"));
+            var orderItemss = (from o in myDbContext.Orders
+                               join oi in myDbContext.OrderItems on o.id equals oi.orderId
+
+                               where o.userId == userId
+                               select oi).ToList();
+            var products = (from oi in orderItemss
+                            join p in myDbContext.Products on oi.productId equals p.id
+                            select new Product().convert(p))
+                            .GroupBy(x => x.id)
+                            .Select(g => g.First())
+                            .ToList();
+            List<ProductRating> result = new List<ProductRating>();
+            foreach (var product in products)
+            {
+                result.Add(productRating.GetProductRating(product));
+            }
+            return Ok(result);
+           
+
+
+        }
+        
     }
 }
