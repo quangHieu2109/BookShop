@@ -40,24 +40,34 @@ namespace BookshopAPI.Models
         private MyDbContext myDbContext = new MyDbContextService().GetMyDbContext();
         public Product Product { get; set; }
         public double? rating { get; set; }
-        public ProductRating GetProductRating(Product p)
+        public bool wishlist { get; set; } 
+        public ProductRating GetProductRating(Product p, long userId)
         {
+            bool _wishlist = (myDbContext.WishListItems.FirstOrDefault(x => x.productId == p.id && x.userId == userId)) != null;
             var productReview = myDbContext.ProductReviews.FirstOrDefault(x => x.productId == p.id);
             if(productReview == null)
             {
                 return new ProductRating
                 {
-                    Product = p
+                    Product = p,
+                    wishlist = _wishlist,
                 };
             }
+            else { 
             var productRatings = myDbContext.ProductReviews
                     .Where(pr => pr.productId == p.id)
                     .Average(x => x.ratingScore);
+            
             return new ProductRating
             {
                 Product = p,
-                rating = Math.Round(productRatings, 1)
+                rating = Math.Round(productRatings, 1),
+                wishlist = _wishlist
+
             };
+            }
         }
+
+        
     }
 }

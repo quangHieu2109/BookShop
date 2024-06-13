@@ -22,11 +22,16 @@ namespace BookshopAPI.Controllers
         [HttpGet("getAllProduct")]
         public IActionResult getAllProduct()
         {
+            long userId=-1;
+            if(this.User.FindFirstValue("Id") != null)
+            {
+                userId  = long.Parse(this.User.FindFirstValue("Id"));
+            }
             var products = myDbContext.Products.ToList();
-            List<ProductRating> ProductRatings = new List<ProductRating>();
+            List<Object> ProductRatings = new List<Object>();
             foreach (var product in products)
             {
-                ProductRatings.Add(productRating.GetProductRating(product));
+                ProductRatings.Add(productRating.GetProductRating(product, userId));
             }
             return Ok(responeMessage.response200(ProductRatings));
         }
@@ -38,10 +43,10 @@ namespace BookshopAPI.Controllers
             var wishlist = (from w in myDbContext.WishListItems
                            where w.userId == userId
                            select w).ToList();
-            List<ProductRating> products = new List<ProductRating>();
+            List<Object> products = new List<Object>();
             foreach(var wish in wishlist)
             {
-                products.Add(productRating.GetProductRating(myDbContext.Products.SingleOrDefault(x => x.id == wish.productId)));
+                products.Add(productRating.GetProductRating(myDbContext.Products.SingleOrDefault(x => x.id == wish.productId), userId));
 
             }
             if(products.Count > 0)
@@ -55,14 +60,19 @@ namespace BookshopAPI.Controllers
         [HttpGet("getProductByName")]
         public IActionResult getByName(string name)
         {
+            long userId = -1;
+            if (this.User.FindFirstValue("Id") != null)
+            {
+                userId = long.Parse(this.User.FindFirstValue("Id"));
+            }
             var products = myDbContext.Products.Where(x =>
             x.name.Contains(name)).ToList();
             if (products != null)
             {
-                List<ProductRating> result = new List<ProductRating>();
+                List<Object> result = new List<Object>();
                 foreach(var product in products)
                 {
-                    result.Add(productRating.GetProductRating(product));
+                    result.Add(productRating.GetProductRating(product, userId));
                 }
                 return Ok(responeMessage.response200(result));
             }
@@ -75,6 +85,11 @@ namespace BookshopAPI.Controllers
         [HttpGet("getSimilarProduct")]
         public IActionResult getSimilarProduct(long productId)
         {
+            long userId = -1;
+            if (this.User.FindFirstValue("Id") != null)
+            {
+                userId = long.Parse(this.User.FindFirstValue("Id"));
+            }
             var category_product = myDbContext.Product_Categories.SingleOrDefault(x => x.productId == productId);
             if (category_product != null)
             {
@@ -85,10 +100,10 @@ namespace BookshopAPI.Controllers
                 
                 if (products != null)
                 {
-                    List<ProductRating> result = new List<ProductRating>();
+                    List<Object> result = new List<Object>();
                     foreach (var product in products)
                     {
-                        result.Add(productRating.GetProductRating(product));
+                        result.Add(productRating.GetProductRating(product, userId));
                     }
                     return Ok(responeMessage.response200(result));
                 }
@@ -100,17 +115,21 @@ namespace BookshopAPI.Controllers
         [HttpGet("getProduct/categoryId={categoryId}")]
         public IActionResult getProductByCategoryId(long categoryId)
         {
-            
+            long userId = -1;
+            if (this.User.FindFirstValue("Id") != null)
+            {
+                userId = long.Parse(this.User.FindFirstValue("Id"));
+            }
             var products = from p in myDbContext.Products
                             join c in myDbContext.Product_Categories on p.id equals c.productId
                             where c.categoryId == categoryId
                             select  p ;
             if (products != null)
             {
-                List<ProductRating> result = new List<ProductRating>();
+                List<Object> result = new List<Object>();
                 foreach (var product in products)
                 {
-                    result.Add(productRating.GetProductRating(product));
+                    result.Add(productRating.GetProductRating(product, userId));
                 }
                 return Ok(responeMessage.response200(result));
             }
@@ -120,6 +139,11 @@ namespace BookshopAPI.Controllers
         [HttpGet("getProduct/categoryName={categoryName}")]
         public IActionResult getProductByCategoryName(String categoryName)
         {
+            long userId = -1;
+            if (this.User.FindFirstValue("Id") != null)
+            {
+                userId = long.Parse(this.User.FindFirstValue("Id"));
+            }
             var category = myDbContext.Categories.FirstOrDefault(x => x.name.Contains(categoryName));
             if(category != null)
             {
@@ -129,10 +153,10 @@ namespace BookshopAPI.Controllers
                                select p ;
                 if (products != null)
                 {
-                    List<ProductRating> result = new List<ProductRating>();
+                    List<Object> result = new List<Object>();
                     foreach (var product in products)
                     {
-                        result.Add(productRating.GetProductRating(product));
+                        result.Add(productRating.GetProductRating(product, userId));
                     }
                     return Ok(responeMessage.response200(result));
                 }
@@ -273,6 +297,11 @@ namespace BookshopAPI.Controllers
         [HttpGet("getTopSell")]
         public IActionResult getTopSell()
         {
+            long userId = -1;
+            if (this.User.FindFirstValue("Id") != null)
+            {
+                userId = long.Parse(this.User.FindFirstValue("Id"));
+            }
             var products = myDbContext.OrderItems
                      .GroupBy(pr => pr.productId)
                      .Select(g => new 
@@ -289,9 +318,10 @@ namespace BookshopAPI.Controllers
             {
                 result.Add(new
                 {
-                    product= productRating.GetProductRating(product.Product).Product,
+                    product= product,
                     quantity=product.Quantity,
-                    rating = productRating.GetProductRating(product.Product).rating
+                    rating = productRating.GetProductRating(product.Product, userId).rating,
+                    wishlist = productRating.GetProductRating(product.Product, userId).wishlist
                 });
             }
             return Ok(responeMessage.response200(result));
@@ -300,6 +330,11 @@ namespace BookshopAPI.Controllers
         [HttpGet("getReleases")]
         public IActionResult getReleases()
         {
+            long userId = -1;
+            if (this.User.FindFirstValue("Id") != null)
+            {
+                userId = long.Parse(this.User.FindFirstValue("Id"));
+            }
             var products = myDbContext.Products
                         
                      .OrderByDescending(x => x.createdAt)
@@ -308,7 +343,7 @@ namespace BookshopAPI.Controllers
             List<Object> result = new List<Object>();
             foreach (var product in products)
             {
-                result.Add(productRating.GetProductRating(product));
+                result.Add(productRating.GetProductRating(product, userId ));
             }
             return Ok(responeMessage.response200(result));
         }
@@ -329,10 +364,10 @@ namespace BookshopAPI.Controllers
                             .GroupBy(x => x.id)
                             .Select(g => g.First())
                             .ToList();
-            List<ProductRating> result = new List<ProductRating>();
+            List<Object> result = new List<Object>();
             foreach (var product in products)
             {
-                result.Add(productRating.GetProductRating(product));
+                result.Add(productRating.GetProductRating(product, userId ));
             }
             return Ok(responeMessage.response200(result));
            
