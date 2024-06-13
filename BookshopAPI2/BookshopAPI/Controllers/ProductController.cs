@@ -119,7 +119,7 @@ namespace BookshopAPI.Controllers
         [HttpGet("getProduct/categoryName={categoryName}")]
         public IActionResult getProductByCategoryName(String categoryName)
         {
-            var category = myDbContext.Categories.FirstOrDefault(x => x.name ==  categoryName);
+            var category = myDbContext.Categories.FirstOrDefault(x => x.name.Contains(categoryName));
             if(category != null)
             {
                 var products = from p in myDbContext.Products
@@ -203,33 +203,37 @@ namespace BookshopAPI.Controllers
 
         }
 
-        [HttpPost("deleteWishList/productId={productId}")]
+        [HttpDelete("deleteWishList/productId={productId}")]
         [Authorize]
         public IActionResult DeleteWishList(long productId)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var wishlist = myDbContext.WishListItems.SingleOrDefault(x => x.productId == productId && x.userId == userId);
+            
             var product = myDbContext.Products.SingleOrDefault(x => x.id == productId);
             if (product == null)
             {
-                return BadRequest("Mã sản phẩm không chính xác");
+                return BadRequest(responeMessage.response400("Mã sản phẩm không chính xác"));
             }
-
-            if (wishlist != null)
+            else
             {
-                
-                myDbContext.WishListItems.Remove(wishlist);
-                int rs = myDbContext.SaveChanges();
-                if (rs > 0)
+                var wishlist = myDbContext.WishListItems.SingleOrDefault(x => x.productId == productId && x.userId == userId);
+                if (wishlist != null)
                 {
-                    return Ok(responeMessage.response200);
+                    myDbContext.WishListItems.Remove(wishlist);
+                    myDbContext.SaveChanges();
+                    return Ok(responeMessage.response200("Xóa sản phẩm khỏi danh sách yêu thích thành công"));
                 }
-                return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
+                else
+                {
+                    return BadRequest(responeMessage.response400("Sản phẩm không có trong danh sách yêu thích!"));
+                }
+
+               
             }
-            return BadRequest(responeMessage.response404);
+            
 
         }
-        [HttpGet("getByOrderRating")]
+            [HttpGet("getByOrderRating")]
         public IActionResult getRecommend()
         {
             var productRatings = myDbContext.ProductReviews
