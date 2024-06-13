@@ -18,8 +18,16 @@ namespace BookshopAPI.Controllers
         public IActionResult getAddress()
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var address = myDbContext.Addresses.All(x => x.userId == userId);
-            return Ok(address);
+            var address = myDbContext.Addresses.Where(x => x.userId == userId).ToList();
+            if(address.Count > 0 )
+            {
+                return Ok(responeMessage.response200(address));
+            }
+            else
+            {
+                return BadRequest(responeMessage.response404);
+            }
+           
 
         }
         [HttpPost("addAddress")]

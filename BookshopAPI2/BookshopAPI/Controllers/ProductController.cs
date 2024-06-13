@@ -2,6 +2,7 @@
 using BookshopAPI.Service;
 using Google.Protobuf.Collections;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using System.Security.Claims;
@@ -27,7 +28,7 @@ namespace BookshopAPI.Controllers
             {
                 ProductRatings.Add(productRating.GetProductRating(product));
             }
-            return Ok(ProductRatings);
+            return Ok(responeMessage.response200(ProductRatings));
         }
         [HttpGet("getWishList")]
         [Authorize]
@@ -46,9 +47,9 @@ namespace BookshopAPI.Controllers
             if(products.Count > 0)
             {
                 
-                return Ok(products);
+                return Ok(responeMessage.response200(products));
             }
-            return NotFound();
+            return NotFound(responeMessage.response404);
 
         }
         [HttpGet("getProductByName")]
@@ -63,11 +64,11 @@ namespace BookshopAPI.Controllers
                 {
                     result.Add(productRating.GetProductRating(product));
                 }
-                return Ok(result);
+                return Ok(responeMessage.response200(result));
             }
             else
             {
-                return NotFound();
+                return NotFound(responeMessage.response404);
             }
 
         }
@@ -89,10 +90,10 @@ namespace BookshopAPI.Controllers
                     {
                         result.Add(productRating.GetProductRating(product));
                     }
-                    return Ok(result);
+                    return Ok(responeMessage.response200(result));
                 }
             }
-            return NotFound();
+            return NotFound(responeMessage.response404);
         }
 
 
@@ -111,10 +112,10 @@ namespace BookshopAPI.Controllers
                 {
                     result.Add(productRating.GetProductRating(product));
                 }
-                return Ok(result);
+                return Ok(responeMessage.response200(result));
             }
             
-            return NotFound();
+            return NotFound(responeMessage.response404);
         }
         [HttpGet("getProduct/categoryName={categoryName}")]
         public IActionResult getProductByCategoryName(String categoryName)
@@ -133,11 +134,11 @@ namespace BookshopAPI.Controllers
                     {
                         result.Add(productRating.GetProductRating(product));
                     }
-                    return Ok(result);
+                    return Ok(responeMessage.response200(result));
                 }
             }
 
-            return NotFound();
+            return NotFound(responeMessage.response404);
         }
 
 
@@ -246,7 +247,7 @@ namespace BookshopAPI.Controllers
                      .OrderByDescending(x => x.rating)
                      .Take(10)
                      .ToList();
-            return Ok(productRatings);
+            return Ok(responeMessage.response200(productRatings));
         }
         [HttpGet("getRecommendByOrderRating/productId={productId}")]
         public IActionResult getRecommendByOrderRating(long productId)
@@ -266,7 +267,7 @@ namespace BookshopAPI.Controllers
             var productRatings2 = from pr in productRatings
                                   where (myDbContext.Product_Categories.Single(x => x.productId == pr.Product.id).categoryId == category_product.categoryId)
                                   select pr;
-            return Ok(productRatings2);
+            return Ok(responeMessage.response200(productRatings2));
         }
 
         [HttpGet("getTopSell")]
@@ -293,7 +294,7 @@ namespace BookshopAPI.Controllers
                     rating = productRating.GetProductRating(product.Product).rating
                 });
             }
-            return Ok(result);
+            return Ok(responeMessage.response200(result));
         }
 
         [HttpGet("getReleases")]
@@ -309,7 +310,7 @@ namespace BookshopAPI.Controllers
             {
                 result.Add(productRating.GetProductRating(product));
             }
-            return Ok(result);
+            return Ok(responeMessage.response200(result));
         }
 
         [HttpGet("getPerchased")]
@@ -333,7 +334,7 @@ namespace BookshopAPI.Controllers
             {
                 result.Add(productRating.GetProductRating(product));
             }
-            return Ok(result);
+            return Ok(responeMessage.response200(result));
            
 
 

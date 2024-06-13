@@ -49,13 +49,13 @@ namespace BookshopAPI.Controllers
         public IActionResult register(UserRegister userRegister) {
             var user = myDbContext.Users.SingleOrDefault(x => x.username == userRegister.username);
             if (user != null) {
-                return BadRequest("Username đã tồn tại!");
+                return BadRequest(responeMessage.response400("Username đã tồn tại!"));
             }else
             {
                 user = myDbContext.Users.SingleOrDefault(x => x.email == userRegister.email);
                 if (user != null)
                 {
-                    return BadRequest("Email đã tồn tại!");
+                    return BadRequest(responeMessage.response400("Email đã tồn tại!"));
                 }
                 else
                 {

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Internal;
 using System.Collections.Generic;
+using System.Net.WebSockets;
 using System.Security.Claims;
 
 namespace BookshopAPI.Controllers
@@ -43,8 +44,7 @@ namespace BookshopAPI.Controllers
                             createdAt = ci.createdAt,
                             updatedAt = ci.updatedAt
                             }).ToList();
-            
-            return Ok(new CartResponse
+            var cartResponse = new CartResponse
             {
                 id = cart.id,
                 userId = cart.userId,
@@ -52,7 +52,8 @@ namespace BookshopAPI.Controllers
                 updatedAt = cart.updatedAt,
                 CartItems = cartItems
 
-            }) ;
+            };
+            return Ok(responeMessage.response200(cartResponse)) ;
         }
         [HttpPost("addCartItemPId={productId}")]
         [Authorize]

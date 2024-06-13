@@ -18,7 +18,7 @@ namespace BookshopAPI.Controllers
         [Authorize(Roles ="ADMIN, EMPLOYEE")]
         public IActionResult getAll()
         {
-            return Ok(myDbContext.Orders);
+            return Ok(responeMessage.response200(myDbContext.Orders));
         }
         [HttpGet("getAllOrdersDetail")]
         [Authorize(Roles = "ADMIN, EMPLOYEE")]
@@ -55,7 +55,7 @@ namespace BookshopAPI.Controllers
                 };
                 OrderResponse.Add(orderResponse);
             }
-            return Ok(OrderResponse);
+            return Ok(responeMessage.response200(OrderResponse));
         }
         [HttpPost("createOrder")]
         [Authorize]
