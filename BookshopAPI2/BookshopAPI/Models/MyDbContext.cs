@@ -27,6 +27,7 @@ namespace BookshopAPI.Models
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<WishListItem> WishListItems {  get; set; }
         public DbSet<ProductReview> ProductReviews { get; set; }
+        public DbSet<OTP> OPTs {  get; set; }
 
     }
 }

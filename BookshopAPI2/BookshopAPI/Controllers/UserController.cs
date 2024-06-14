@@ -45,6 +45,107 @@ namespace BookshopAPI.Controllers
                 }
             }
         }
+        [HttpPost("sendOTP/email={email}")]
+        public IActionResult Otp(string email)
+        {
+            if(myDbContext.Users.SingleOrDefault(x => x.email == email) != null)
+            {
+                var senMail = new SendMail();
+                var rd = new Random();
+                string otp = "";
+                for (int i = 0; i < 6; i++)
+                {
+                    otp += rd.Next(0, 9);
+                }
+                senMail.SendEmail(email, otp);
+                var sendOtp = myDbContext.OPTs.SingleOrDefault(x => x.email == email);
+                if(sendOtp != null)
+                {
+                    myDbContext.OPTs.Remove(sendOtp);
+                    myDbContext.SaveChanges();
+                }
+                sendOtp = new OTP
+                {
+                    email = email,
+                    otp = otp,
+                    accuracy = 0,
+                    endAt = DateTime.Now.AddMinutes(5)
+                };
+                myDbContext.OPTs.Add(sendOtp);
+                myDbContext.SaveChanges();
+                return Ok(responeMessage.response200("Gửi OTP thành công"));
+            }
+            else
+            {
+                return BadRequest(responeMessage.response400("Email chưa được đăng ký tài khoản"));
+            }
+        }
+        [HttpPost("accuracyOTP")]
+        public IActionResult accuracyOtp(AccuracyOtp accuracyOtp)
+        {
+            var otp = myDbContext.OPTs.SingleOrDefault(x => x.email == accuracyOtp.email);
+            if (otp == null)
+            {
+                return BadRequest(responeMessage.response400("Email không chính xác"));
+            }
+            else
+            {
+                if (otp.accuracy == 1) {
+                    return Ok(responeMessage.response200);
+                }
+                else
+                {
+                    if (otp.endAt < DateTime.Now) {
+                        return BadRequest(responeMessage.response400("OTP đã hết hiệu lực"));
+                    }
+                    else
+                    {
+                        if (otp.otp != accuracyOtp.otp)
+                        {
+                            return BadRequest(responeMessage.response400("OTP không chính xác"));
+                        }
+                        else
+                        {
+                            otp.accuracy = 1;
+                            otp.endAt = DateTime.Now.AddMinutes(5);
+                            myDbContext.SaveChanges();
+                            return Ok(responeMessage.response200("Xác thực OTP thành công"));
+                        }
+                    }
+                }
+            }
+        }
+        [HttpPost("changePasswordByOTP")]
+        public IActionResult changePasswordByOTP(ChangePasswordOtp changePasswordOtp)
+        {
+            var otp = myDbContext.OPTs.SingleOrDefault(x => x.email ==  changePasswordOtp.email);
+            if(otp == null)
+            {
+                return BadRequest(responeMessage.response400("Email không chính xác"));
+            }
+            else
+            {
+                if (otp.accuracy == 0)
+                {
+                    return BadRequest(responeMessage.response400("OTP chưa được xác thực"));
+                }
+                else
+                {
+                   if(otp.endAt < DateTime.Now)
+                    {
+                        return BadRequest(responeMessage.response400("OTP đã hết hạn"));
+                    }
+                    else
+                    {
+                        var user = myDbContext.Users.SingleOrDefault(x => x.email == otp.email);
+                        user.password = Hash(changePasswordOtp.password);
+                        myDbContext.OPTs.Remove(otp);
+                        myDbContext.SaveChanges();
+                        return Ok(responeMessage.response200("Đổi mật khẩu thành công"));
+                    }
+                }
+            }
+        }
         [HttpPost("register")]
         public IActionResult register(UserRegister userRegister) {
             var user = myDbContext.Users.SingleOrDefault(x => x.username == userRegister.username);
