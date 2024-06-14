@@ -318,7 +318,7 @@ namespace BookshopAPI.Controllers
             {
                 result.Add(new
                 {
-                    product= product,
+                    product= productRating.GetProductRating(product.Product, userId).Product,
                     quantity=product.Quantity,
                     rating = productRating.GetProductRating(product.Product, userId).rating,
                     wishlist = productRating.GetProductRating(product.Product, userId).wishlist
@@ -347,7 +347,25 @@ namespace BookshopAPI.Controllers
             }
             return Ok(responeMessage.response200(result));
         }
-
+        [HttpGet("getById/productId={productId}")]
+        public IActionResult getById(long productId)
+        {
+            long userId = -1;
+            if (this.User.FindFirstValue("Id") != null)
+            {
+                userId = long.Parse(this.User.FindFirstValue("Id"));
+            }
+            var product = myDbContext.Products
+                            .SingleOrDefault(x => x.id == productId)
+                       ;
+            if(product == null)
+            {
+                return NotFound(responeMessage.response404);
+            }
+            var  result = (productRating.GetProductRating(product, userId));
+            
+            return Ok(responeMessage.response200(result));
+        }
         [HttpGet("getPerchased")]
         [Authorize]
         public IActionResult getPerchased()
