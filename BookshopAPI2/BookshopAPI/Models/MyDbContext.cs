@@ -28,6 +28,7 @@ namespace BookshopAPI.Models
         public DbSet<WishListItem> WishListItems {  get; set; }
         public DbSet<ProductReview> ProductReviews { get; set; }
         public DbSet<OTP> OPTs {  get; set; }
+        public DbSet<GoogleUser> GoogleUsers { get; set; }
 
     }
 }

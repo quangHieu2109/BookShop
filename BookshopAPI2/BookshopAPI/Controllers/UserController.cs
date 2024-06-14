@@ -1,5 +1,6 @@
 ﻿using BookshopAPI.Models;
 using BookshopAPI.Service;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -7,6 +8,15 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Oauth2.v2;
+using Google.Apis.Oauth2.v2.Data;
+using Google.Apis.Auth.OAuth2.Flows;
+using Microsoft.Extensions.Options;
+using Google.Apis.Auth;
+using Newtonsoft.Json.Linq;
+using System.Management;
+
 
 namespace BookshopAPI.Controllers
 {
@@ -191,7 +201,51 @@ namespace BookshopAPI.Controllers
             }
             
         }
+        [HttpPost("loginGoogleUser/token={token}")]
+        public async Task<IActionResult> loginGoogle(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(token);
 
+            var claim = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "email");
+            
+            if (claim != null)
+            {
+                var email = claim?.Value;
+                var fullName = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+                var user = myDbContext.Users.SingleOrDefault(x => x.email == email);
+                if(user == null)
+                {
+                    user = new User
+                    {
+                        email = email,
+                        fullName = fullName,
+                        role = "CUSTOMER",
+                        createAt = DateTime.Now,
+                        gender = 1
+                    };
+                    myDbContext.Users.Add(user);
+                    myDbContext.SaveChanges();
+
+                }
+
+
+                var accessToken = generateToken(user);
+                return Ok(responeMessage.response200(accessToken, "Đăng nhập thành công"));
+                
+            }
+            else
+            {
+                return BadRequest(responeMessage.response400("Token không chính xác!"));
+            }
+            
+            
+            
+           
+
+
+
+        }
         private String generateToken(User user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
@@ -206,9 +260,9 @@ namespace BookshopAPI.Controllers
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(ClaimTypes.Role, user.role),
 
-                    new Claim("UserName", user.username),
-                     new Claim("Id", user.id+""),
-                    new Claim("Password", user.password)
+                    
+                     new Claim("Id", user.id+"")
+                    
                     // role
 
                     //token
