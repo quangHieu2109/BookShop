@@ -8,7 +8,7 @@ namespace BookshopAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class OrderController : Controller
+    public class AddressController : Controller
     {
         private IConfiguration configuration = new MyDbContextService().GetConfiguration();
         private MyDbContext myDbContext = new MyDbContextService().GetMyDbContext();

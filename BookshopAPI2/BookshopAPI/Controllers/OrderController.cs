@@ -1,7 +1,6 @@
 ﻿using BookshopAPI.Models;
 using BookshopAPI.Service;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -9,7 +8,7 @@ namespace BookshopAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class OrderController2 : Controller
+    public class OrderController : Controller
     {
         private IConfiguration configuration = new MyDbContextService().GetConfiguration();
         private MyDbContext myDbContext = new MyDbContextService().GetMyDbContext();
