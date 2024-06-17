@@ -19,14 +19,9 @@ namespace BookshopAPI.Controllers
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
             var address = myDbContext.Addresses.Where(x => x.userId == userId).ToList();
-            if(address.Count > 0 )
-            {
+            
                 return Ok(responeMessage.response200(address));
-            }
-            else
-            {
-                return BadRequest(responeMessage.response404);
-            }
+            
            
 
         }
@@ -35,23 +30,37 @@ namespace BookshopAPI.Controllers
         public IActionResult addAddress(AddressVM addressVM)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var address = new Address
+            var address = myDbContext.Addresses.SingleOrDefault(x => x.userId == userId && x.houseNumber == addressVM.houseNumber
+                && x.province == addressVM.province && x.district == addressVM.district && x.ward == addressVM.ward);
+            if(address != null)
             {
-                userId = userId,
-                houseNumber = addressVM.houseNumber,
-                province = addressVM.province,
-                district = addressVM.district,
-                ward = addressVM.ward
-            };
-            myDbContext.Addresses.Add(address);
-            int rs =myDbContext.SaveChanges();
-            if (rs > 0)
-            {
-                return Ok(responeMessage.response200(address));
-
+                return Ok(responeMessage.response400(address, "Địa chỉ này đã được tạo trước đó!"));
             }
-            return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
+            else 
+            { 
+                 address = new Address
+                {
+                    userId = userId,
+                    houseNumber = addressVM.houseNumber,
+                    province = addressVM.province,
+                    district = addressVM.district,
+                    ward = addressVM.ward
+                };
+                myDbContext.Addresses.Add(address);
+                int rs =myDbContext.SaveChanges();
+                    if (rs > 0)
+                    {
+                    address = myDbContext.Addresses.SingleOrDefault(x => x.userId == userId && x.houseNumber == addressVM.houseNumber
+                    && x.province == addressVM.province && x.district == addressVM.district && x.ward == addressVM.ward);
+                    return Ok(responeMessage.response200(address, "Thêm địa chỉ thành công!"));
 
+                    }
+                    else
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
+                    }
+            }
+            
         }
 
     }
