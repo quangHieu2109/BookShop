@@ -40,6 +40,7 @@ namespace BookshopAPI.Controllers
         [Authorize]
         public IActionResult getInfor()
         {
+            
             long userId = long.Parse(this.User.FindFirstValue("Id"));
             var user = myDbContext.Users.SingleOrDefault(x => x.id == userId);
             return Ok(responeMessage.response200(user));
@@ -130,7 +131,7 @@ namespace BookshopAPI.Controllers
             var otp = myDbContext.OPTs.SingleOrDefault(x => x.email == accuracyOtp.email);
             if (otp == null)
             {
-                return BadRequest(responeMessage.response400("Email không chính xác"));
+                return Ok(responeMessage.response400(null, "Email không chính xác"));
             }
             else
             {
@@ -140,20 +141,20 @@ namespace BookshopAPI.Controllers
                 else
                 {
                     if (otp.endAt < DateTime.Now) {
-                        return BadRequest(responeMessage.response400("OTP đã hết hiệu lực"));
+                        return Ok(responeMessage.response400(null, "OTP đã hết hiệu lực"));
                     }
                     else
                     {
                         if (otp.otp != accuracyOtp.otp)
                         {
-                            return BadRequest(responeMessage.response400("OTP không chính xác"));
+                            return Ok(responeMessage.response400(null, "OTP không chính xác"));
                         }
                         else
                         {
                             otp.accuracy = 1;
                             otp.endAt = DateTime.Now.AddMinutes(5);
                             myDbContext.SaveChanges();
-                            return Ok(responeMessage.response200("Xác thực OTP thành công"));
+                            return Ok(responeMessage.response200(null, "Xác thực OTP thành công"));
                         }
                     }
                 }
@@ -165,19 +166,19 @@ namespace BookshopAPI.Controllers
             var otp = myDbContext.OPTs.SingleOrDefault(x => x.email ==  changePasswordOtp.email);
             if(otp == null)
             {
-                return BadRequest(responeMessage.response400("Email không chính xác"));
+                return Ok(responeMessage.response400(null, "Email không chính xác"));
             }
             else
             {
                 if (otp.accuracy == 0)
                 {
-                    return BadRequest(responeMessage.response400("OTP chưa được xác thực"));
+                    return Ok(responeMessage.response400(null, "OTP chưa được xác thực"));
                 }
                 else
                 {
                    if(otp.endAt < DateTime.Now)
                     {
-                        return BadRequest(responeMessage.response400("OTP đã hết hạn"));
+                        return Ok(responeMessage.response400(null, "OTP đã hết hạn"));
                     }
                     else
                     {
@@ -185,7 +186,7 @@ namespace BookshopAPI.Controllers
                         user.password = Hash(changePasswordOtp.password);
                         myDbContext.OPTs.Remove(otp);
                         myDbContext.SaveChanges();
-                        return Ok(responeMessage.response200("Đổi mật khẩu thành công"));
+                        return Ok(responeMessage.response200(null, "Đổi mật khẩu thành công"));
                     }
                 }
             }
