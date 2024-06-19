@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `accuracyuser` (
   CONSTRAINT `accuracyuser_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table bookshopdb2.accuracyuser: ~1 rows (approximately)
+-- Dumping data for table bookshopdb2.accuracyuser: ~0 rows (approximately)
 INSERT INTO `accuracyuser` (`id`, `username`, `accuracyCode`, `endAt`) VALUES
 	(8, 'user11', '660833', '2024-05-31 06:40:04');
 
@@ -45,16 +45,25 @@ CREATE TABLE IF NOT EXISTS `address` (
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`),
   CONSTRAINT `address_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table bookshopdb2.address: ~6 rows (approximately)
+-- Dumping data for table bookshopdb2.address: ~15 rows (approximately)
 INSERT INTO `address` (`id`, `userId`, `houseNumber`, `province`, `district`, `ward`) VALUES
 	(33, 1, '123', 'Hà Giang', 'HUYỆN ĐỒNG VĂN', 'XÃ TẢ LỦNG'),
 	(34, 1, '123', 'Nam Ðịnh', 'HUYỆN NAM TRỰC', 'XÃ NAM THẮNG'),
 	(35, 1, '111', 'Hà Giang', 'HUYỆN ĐỒNG VĂN', 'XÃ SỦNG LÀ'),
 	(36, 1, '123', 'Hà Giang', 'THÀNH PHỐ HÀ GIANG', 'PHƯỜNG NGỌC HÀ'),
 	(39, 1, '1144', 'Ninh Bình', 'HUYỆN YÊN MÔ', 'XÃ YÊN ĐÔNG'),
-	(40, 1, '555', 'Hải Dương', 'HUYỆN TỨ KỲ', 'XÃ NGỌC KỲ');
+	(40, 1, '555', 'Hải Dương', 'HUYỆN TỨ KỲ', 'XÃ NGỌC KỲ'),
+	(44, 1, '435', 'Hà Nội', 'QUẬN HOÀN KIẾM', 'XÃ THIỆU KHÁNH'),
+	(45, 1714833219717, '123', 'Hà Nội', 'QUẬN HOÀN KIẾM', 'XÃ THIỆU KHÁNH'),
+	(46, 1714833219717, '231', 'Tiền Giang', 'HUYỆN CHÂU THÀNH', 'THỊ TRẤN TÂN HIỆP'),
+	(47, 1714833219717, '321', 'Hải Dương', 'THÀNH PHỐ HẢI DƯƠNG', 'XÃ GIA XUYÊN'),
+	(48, 1714833219717, '001', 'Nam Ðịnh', 'HUYỆN NAM TRỰC', 'XÃ NAM HÙNG'),
+	(49, 1, '123', 'Hà Nội', 'QUẬN HOÀN KIẾM', 'XÃ THIỆU KHÁNH'),
+	(50, 1, '11111', 'Hà Nội', 'QUẬN HOÀN KIẾM', 'XÃ THIỆU KHÁNH'),
+	(51, 1, '1111', 'Hà Nội', 'QUẬN HOÀN KIẾM', 'XÃ THIỆU KHÁNH'),
+	(52, 1, '1122', 'Hà Nội', 'QUẬN HOÀN KIẾM', 'XÃ THIỆU KHÁNH');
 
 -- Dumping structure for table bookshopdb2.cart
 CREATE TABLE IF NOT EXISTS `cart` (
@@ -65,16 +74,15 @@ CREATE TABLE IF NOT EXISTS `cart` (
   PRIMARY KEY (`id`),
   KEY `idx_cart_user` (`userId`),
   CONSTRAINT `fk_cart_user` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=133628511329779059 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table bookshopdb2.cart: ~6 rows (approximately)
+-- Dumping data for table bookshopdb2.cart: ~5 rows (approximately)
 INSERT INTO `cart` (`id`, `userId`, `createdAt`, `updatedAt`) VALUES
 	(1, 4, '2021-12-30 08:39:19', NULL),
 	(2, 5, '2021-12-18 13:35:59', NULL),
 	(8, 1, '2024-04-04 15:40:17', NULL),
 	(14, 2, '2024-05-21 04:28:31', NULL),
-	(15, 3, '2024-05-21 06:10:19', NULL),
-	(16, 1714833219717, '2024-06-05 09:04:29', NULL);
+	(15, 3, '2024-05-21 06:10:19', NULL);
 
 -- Dumping structure for table bookshopdb2.cart_item
 CREATE TABLE IF NOT EXISTS `cart_item` (
@@ -92,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `cart_item` (
   CONSTRAINT `fk_cart_item_product` FOREIGN KEY (`productId`) REFERENCES `product` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table bookshopdb2.cart_item: ~15 rows (approximately)
+-- Dumping data for table bookshopdb2.cart_item: ~14 rows (approximately)
 INSERT INTO `cart_item` (`id`, `cartId`, `productId`, `quantity`, `createdAt`, `updatedAt`) VALUES
 	(1, 2, 55, 3, '2021-07-13 03:21:51', NULL),
 	(2, 2, 36, 2, '2021-07-05 00:21:45', NULL),
@@ -107,8 +115,7 @@ INSERT INTO `cart_item` (`id`, `cartId`, `productId`, `quantity`, `createdAt`, `
 	(37, 8, 78, 7, '2024-06-05 07:45:52', '2024-06-05 07:45:52'),
 	(38, 8, 99, 1, '2024-06-05 07:35:45', NULL),
 	(40, 8, 46, 1, '2024-06-05 07:47:02', NULL),
-	(41, 8, 93, 1, '2024-06-05 07:50:19', NULL),
-	(42, 16, 100, 3, '2024-06-10 13:29:02', NULL);
+	(41, 8, 93, 1, '2024-06-05 07:50:19', NULL);
 
 -- Dumping structure for table bookshopdb2.category
 CREATE TABLE IF NOT EXISTS `category` (
@@ -162,10 +169,8 @@ INSERT INTO `categorys_of_voucher` (`id`, `voucherId`, `categoryId`) VALUES
 -- Dumping structure for table bookshopdb2.google_user
 CREATE TABLE IF NOT EXISTS `google_user` (
   `email` varchar(255) NOT NULL,
-  `userId` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`email`),
-  KEY `userId` (`userId`),
-  CONSTRAINT `google_user_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `user` (`id`)
+  `googleId` bigint(20) NOT NULL,
+  PRIMARY KEY (`googleId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Dumping data for table bookshopdb2.google_user: ~0 rows (approximately)
@@ -746,6 +751,17 @@ INSERT INTO `order_item` (`id`, `orderId`, `productId`, `price`, `discount`, `qu
 	(86, 1717526036853, 22, 116529, 0, 1, '2024-06-04 18:33:56', NULL),
 	(87, 1717526953253, 17, 90044, 20, 2, '2024-06-04 18:49:13', NULL);
 
+-- Dumping structure for table bookshopdb2.otp
+CREATE TABLE IF NOT EXISTS `otp` (
+  `email` varchar(255) NOT NULL,
+  `otp` varchar(6) DEFAULT NULL,
+  `accuracy` tinyint(4) NOT NULL DEFAULT 0,
+  `endAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table bookshopdb2.otp: ~1 rows (approximately)
+
 -- Dumping structure for table bookshopdb2.product
 CREATE TABLE IF NOT EXISTS `product` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -1290,20 +1306,18 @@ CREATE TABLE IF NOT EXISTS `user` (
   UNIQUE KEY `uq_username` (`username`),
   UNIQUE KEY `uq_email` (`email`),
   UNIQUE KEY `uq_phoneNumber` (`phoneNumber`)
-) ENGINE=InnoDB AUTO_INCREMENT=133620766698527071 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=133628511327861887 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table bookshopdb2.user: ~10 rows (approximately)
+-- Dumping data for table bookshopdb2.user: ~8 rows (approximately)
 INSERT INTO `user` (`id`, `username`, `password`, `fullname`, `email`, `phoneNumber`, `gender`, `role`, `createAt`) VALUES
-	(1, 'user1', '202CB962AC59075B964B07152D234B70', 'Dunn Mcpherson', 'dunnmcpherson@recrisys.com', '0989894900', b'0', 'ADMIN', '2024-04-26 07:43:42'),
+	(1, 'user1', '202CB962AC59075B964B07152D234B70', 'Dunn Mcpherson', 'dunnmcpherson@recrisys.com', '0989894900', b'0', 'ADMIN', '2024-06-14 10:53:31'),
 	(2, 'user2', '202CB962AC59075B964B07152D234B70', 'Foreman Carter', 'foremancarter@recrisys.com', '0993194154', b'0', 'EMPLOYEE', '2024-03-27 14:08:39'),
 	(3, 'user3', '202CB962AC59075B964B07152D234B70', 'Felecia Cabrera', 'feleciacabrera@recrisys.com', '0930174351', b'1', 'EMPLOYEE', '2024-03-27 14:08:39'),
 	(4, 'user4', '202CB962AC59075B964B07152D234B70', 'Juliette Mcdowell', 'juliettemcdowell@recrisys.com', '0911925643', b'1', 'CUSTOMER', '2024-03-27 14:08:39'),
 	(5, 'user5', '202CB962AC59075B964B07152D234B70', 'Vilma Spencer', 'vilmaspencer@recrisys.com', '0987509391', b'1', 'CUSTOMER', '2024-03-27 14:08:39'),
 	(6, 'hao', '32791E666FEF96B588DB16200D5FDA94', 'Quang Hiu', 'abc@gmail.com', '0123123123', b'0', 'CUSTOMER', '2024-03-27 14:08:39'),
-	(9, 'user111', '123', 'Quang Hiu', 'hiu@g.com', '(NULL)', b'0', 'CUSTOMER', '2024-06-05 15:55:58'),
 	(1714833219716, 'user11', '202CB962AC59075B964B07152D234B70', 'HIu', 'hh@fm.cm', '0912123123', b'0', 'CUSTOMER', '2024-05-31 06:40:04'),
-	(1714833219717, 'admin', '21232F297A57A5A743894A0E4A801FC3', 'Admin Test', 'admin@admin.com', '0917294910', b'0', 'ADMIN', '2024-06-05 09:03:53'),
-	(133620766698527070, 'user122', '123', 'Quang Hiu Ne', 'hiu@1g.com', NULL, b'0', 'CUSTOMER', '2024-06-05 15:57:49');
+	(1714833219717, 'admin', '4297F44B13955235245B2497399D7A93', 'Admin Test', 'admin@admin.com', '0917294910', b'0', 'ADMIN', '2024-06-19 19:03:13');
 
 -- Dumping structure for table bookshopdb2.voucher
 CREATE TABLE IF NOT EXISTS `voucher` (
@@ -1342,9 +1356,9 @@ CREATE TABLE IF NOT EXISTS `wishlist_item` (
   KEY `idx_wishlist_item_product` (`productId`),
   CONSTRAINT `fk_wishlist_item_product` FOREIGN KEY (`productId`) REFERENCES `product` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_wishlist_item_user` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table bookshopdb2.wishlist_item: ~34 rows (approximately)
+-- Dumping data for table bookshopdb2.wishlist_item: ~36 rows (approximately)
 INSERT INTO `wishlist_item` (`id`, `userId`, `productId`, `createdAt`) VALUES
 	(1, 4, 1, '2021-07-20 19:09:42'),
 	(2, 4, 2, '2021-04-11 10:08:10'),
@@ -1377,9 +1391,13 @@ INSERT INTO `wishlist_item` (`id`, `userId`, `productId`, `createdAt`) VALUES
 	(29, 4, 29, '2021-03-04 13:11:19'),
 	(30, 5, 30, '2021-03-12 05:44:19'),
 	(31, 1, 36, '2024-04-05 04:41:50'),
-	(32, 1, 55, '2024-04-05 04:42:29'),
 	(33, 1, 22, '2024-04-05 05:10:46'),
-	(37, 1, 78, '2024-04-05 05:18:58');
+	(37, 1, 78, '2024-04-05 05:18:58'),
+	(41, 1, 99, '2024-06-12 10:33:38'),
+	(45, 1, 55, '2024-06-13 15:13:00'),
+	(46, 1, 56, '2024-06-13 15:15:45'),
+	(47, 1, 57, '2024-06-13 15:15:51'),
+	(49, 1, 76, '2024-06-16 14:37:08');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
