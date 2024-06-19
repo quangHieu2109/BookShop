@@ -38,4 +38,12 @@ namespace BookshopAPI.Models
     {
         public string fullName { get; set; }
     }
+    public class UserInfor
+    {
+        public string fullName { get; set; }
+        public string phoneNumber { get; set; }
+        public string email { get; set; }
+        public int? gender { get; set;}
+
+    }
 }

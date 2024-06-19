@@ -33,7 +33,40 @@ namespace BookshopAPI.Controllers
         public IActionResult getAll()
         {
             
-            return Ok(this.User.FindFirstValue("UserName"));
+            return Ok(responeMessage.response200(this.User.FindFirstValue("UserName")));
+        }
+
+        [HttpGet("getInfo")]
+        [Authorize]
+        public IActionResult getInfo()
+        {
+            long userId = long.Parse(this.User.FindFirstValue("Id"));
+            var user = myDbContext.Users.SingleOrDefault(x => x.id == userId);
+            return Ok(responeMessage.response200(user));
+        }
+
+        [HttpPost("changePassword")]
+        [Authorize]
+        public IActionResult changePassword(string password)
+        {
+            long userId = long.Parse(this.User.FindFirstValue("Id"));
+            var user = myDbContext.Users.SingleOrDefault(x => x.id == userId);
+            user.password = password;
+            myDbContext.SaveChanges();
+            return Ok(responeMessage.response200);
+        }
+        [HttpPost("changeInfor")]
+        [Authorize]
+        public IActionResult changeInfor(UserInfor userInfor)
+        {
+            long userId = long.Parse(this.User.FindFirstValue("Id"));
+            var user = myDbContext.Users.SingleOrDefault(x => x.id == userId);
+            user.fullName = userInfor.fullName;
+            user.phoneNumber = userInfor.phoneNumber;
+            user.email = userInfor.email;
+            user.gender = userInfor.gender;
+            myDbContext.SaveChanges();
+            return Ok(responeMessage.response200);
         }
         [HttpPost("login")]
         public IActionResult login(UserLogin userLogin) {
@@ -55,6 +88,7 @@ namespace BookshopAPI.Controllers
                 }
             }
         }
+
         [HttpPost("sendOTP/email={email}")]
         public IActionResult Otp(string email)
         {
