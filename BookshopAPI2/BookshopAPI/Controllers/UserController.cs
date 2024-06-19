@@ -36,9 +36,9 @@ namespace BookshopAPI.Controllers
             return Ok(responeMessage.response200(this.User.FindFirstValue("UserName")));
         }
 
-        [HttpGet("getInfo")]
+        [HttpGet("getInfor")]
         [Authorize]
-        public IActionResult getInfo()
+        public IActionResult getInfor()
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
             var user = myDbContext.Users.SingleOrDefault(x => x.id == userId);
