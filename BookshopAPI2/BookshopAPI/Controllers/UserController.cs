@@ -122,7 +122,7 @@ namespace BookshopAPI.Controllers
             }
             else
             {
-                return BadRequest(responeMessage.response400("Email chưa được đăng ký tài khoản"));
+                return Ok(responeMessage.response400("Email chưa được đăng ký tài khoản"));
             }
         }
         [HttpPost("accuracyOTP")]
@@ -201,7 +201,7 @@ namespace BookshopAPI.Controllers
                 user = myDbContext.Users.SingleOrDefault(x => x.email == userRegister.email);
                 if (user != null)
                 {
-                    return BadRequest(responeMessage.response400("Email đã tồn tại!"));
+                    return Ok(responeMessage.response400("Email đã tồn tại!"));
                 }
                 else
                 {
@@ -230,7 +230,7 @@ namespace BookshopAPI.Controllers
                     }
                     else
                     {
-                        return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
+                        return Ok(responeMessage.response500);
                     }
                 }
             }
@@ -271,7 +271,7 @@ namespace BookshopAPI.Controllers
             }
             else
             {
-                return BadRequest(responeMessage.response400("Token không chính xác!"));
+                return Ok(responeMessage.response400("Token không chính xác!"));
             }
             
             

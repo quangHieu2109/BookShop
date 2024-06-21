@@ -133,9 +133,9 @@ namespace BookshopAPI.Controllers
                 {
                     return Ok(responeMessage.response200(cartItem));
                 }
-                return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
+                return Ok(responeMessage.response500);
             }
-            return BadRequest(responeMessage.response400);
+            return Ok(responeMessage.response400);
         }
 
         [HttpDelete("deleteCartItemId={id}")]
@@ -153,9 +153,9 @@ namespace BookshopAPI.Controllers
                 {
                     return Ok(responeMessage.response200);
                 }
-                return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
+                return Ok(responeMessage.response500);
             }
-            return BadRequest(responeMessage.response400);
+            return Ok(responeMessage.response400);
         }
 
     }

@@ -19,32 +19,40 @@ namespace BookshopAPI.Controllers
         {
             return Ok(responeMessage.response200(myDbContext.Orders));
         }
+
+        [HttpGet("getOrderByStatus/status={status}")]
+        [Authorize(Roles = "ADMIN, EMPLOYEE")]
+        public IActionResult getOrderByStatus(int status)
+        {
+            return Ok(responeMessage.response200(myDbContext.Orders.Where(x => x.status == status).ToList()));
+        }
+
         [HttpGet("getAllOrdersDetail")]
         [Authorize(Roles = "ADMIN, EMPLOYEE")]
         public IActionResult getAllDetail()
         {
             List<OrderResponse> OrderResponse = new List<OrderResponse>();
-            var orders = myDbContext.Orders;
+            var orders = myDbContext.Orders.ToList();
             foreach (var order in orders)
             {
                 var orderItems = (from o in myDbContext.OrderItems
-                                 where o.orderId == order.id
-                                 select new OrderItem
-                                 {
-                                     id = o.id,
-                                     orderId = o.orderId,
-                                     productId = o.productId,
-                                     price = o.price,
-                                     discount = o.discount,
-                                     quantity = o.quantity,
-                                     createdAt = o.createdAt,
-                                     updatedAt = o.updatedAt
+                                  where o.orderId == order.id
+                                  select new OrderItemResponse
+                                  {
+                                      id = o.id,
+                                      orderId = o.orderId,
+                                      product = myDbContext.Products.SingleOrDefault(x => x.id == o.productId),
+                                      price = o.price,
+                                      discount = o.discount,
+                                      quantity = o.quantity,
+                                      createdAt = o.createdAt,
+                                      updatedAt = o.updatedAt
 
-                                 }).ToList();
+                                  }).ToList();
                 var orderResponse = new OrderResponse
                 {
                     id = order.id,
-                    userId = order.userId,
+                    user = myDbContext.Users.SingleOrDefault(x => x.id == order.userId),
                     status = order.status,
                     deliveryMethod = order.deliveryMethod,
                     deliveryPrice = order.deliveryPrice,
@@ -56,6 +64,130 @@ namespace BookshopAPI.Controllers
             }
             return Ok(responeMessage.response200(OrderResponse));
         }
+
+        [HttpGet("getAllOrdersDetailByUser")]
+        [Authorize]
+        public IActionResult getAllDetailByUser()
+        {
+            long userId = long.Parse(this.User.FindFirstValue("Id"));
+            List<OrderResponse> OrderResponse = new List<OrderResponse>();
+            var orders = myDbContext.Orders.Where(x => x.userId == userId).ToList();
+            foreach (var order in orders)
+            {
+                var orderItems = (from o in myDbContext.OrderItems
+                                  where o.orderId == order.id
+                                  select new OrderItemResponse
+                                  {
+                                      id = o.id,
+                                      orderId = o.orderId,
+                                      product = myDbContext.Products.SingleOrDefault(x => x.id == o.productId),
+                                      price = o.price,
+                                      discount = o.discount,
+                                      quantity = o.quantity,
+                                      createdAt = o.createdAt,
+                                      updatedAt = o.updatedAt
+
+                                  }).ToList();
+                var orderResponse = new OrderResponse
+                {
+                    id = order.id,
+                    user = myDbContext.Users.SingleOrDefault(x => x.id == order.userId),
+                    status = order.status,
+                    deliveryMethod = order.deliveryMethod,
+                    deliveryPrice = order.deliveryPrice,
+                    createdAt = order.createdAt,
+                    updatedAt = order.updatedAt,
+                    Items = orderItems
+                };
+                OrderResponse.Add(orderResponse);
+            }
+            return Ok(responeMessage.response200(OrderResponse));
+        }
+        [HttpGet("getOrderDetailById/orderId={orderId}")]
+        [Authorize(Roles = "ADMIN, EMPLOYEE")]
+        public IActionResult getOrderDetailByIdl(long orderId)
+        {
+           
+            var order = myDbContext.Orders.SingleOrDefault(x => x.id == orderId);
+            var orderResponse=new OrderResponse();
+
+
+                if (order == null)
+            {
+                return Ok(responeMessage.response400(null, "OrderId không chính xác"));
+            }
+            else
+            {
+                var orderItems = (from o in myDbContext.OrderItems
+                                  where o.orderId == order.id
+                                  select new OrderItemResponse
+                                  {
+                                      id = o.id,
+                                      orderId = o.orderId,
+                                      product = myDbContext.Products.SingleOrDefault(x => x.id == o.productId),
+                                      price = o.price,
+                                      discount = o.discount,
+                                      quantity = o.quantity,
+                                      createdAt = o.createdAt,
+                                      updatedAt = o.updatedAt
+
+                                  }).ToList();
+                 orderResponse = new OrderResponse
+                {
+                    id = order.id,
+                    user = myDbContext.Users.SingleOrDefault(x => x.id == order.userId),
+                    status = order.status,
+                    deliveryMethod = order.deliveryMethod,
+                    deliveryPrice = order.deliveryPrice,
+                    createdAt = order.createdAt,
+                    updatedAt = order.updatedAt,
+                    Items = orderItems
+                };
+
+            }
+            
+            return Ok(responeMessage.response200(orderResponse));
+        }
+
+
+        [HttpGet("getOrderDetailByStatus/status={status}")]
+        [Authorize(Roles = "ADMIN, EMPLOYEE")]
+        public IActionResult getOrderDetailByStatus(int status)
+        {
+            List<OrderResponse> OrderResponse = new List<OrderResponse>();
+            var orders = myDbContext.Orders.Where(x => x.status == status).ToList();
+            foreach (var order in orders)
+            {
+                var orderItems = (from o in myDbContext.OrderItems
+                                  where o.orderId == order.id
+                                  select new OrderItemResponse
+                                  {
+                                      id = o.id,
+                                      orderId = o.orderId,
+                                      product = myDbContext.Products.SingleOrDefault(x => x.id == o.productId),
+                                      price = o.price,
+                                      discount = o.discount,
+                                      quantity = o.quantity,
+                                      createdAt = o.createdAt,
+                                      updatedAt = o.updatedAt
+
+                                  }).ToList();
+                var orderResponse = new OrderResponse
+                {
+                    id = order.id,
+                    user = myDbContext.Users.SingleOrDefault(x => x.id == order.userId),
+                    status = order.status,
+                    deliveryMethod = order.deliveryMethod,
+                    deliveryPrice = order.deliveryPrice,
+                    createdAt = order.createdAt,
+                    updatedAt = order.updatedAt,
+                    Items = orderItems
+                };
+                OrderResponse.Add(orderResponse);
+            }
+            return Ok(responeMessage.response200(OrderResponse));
+        }
+
         [HttpPost("createOrder")]
         [Authorize]
         public IActionResult createOrder(OrderRequest orderRequest)
@@ -115,14 +247,14 @@ namespace BookshopAPI.Controllers
             {
                 if(order.status == 3)
                 {
-                    return BadRequest(responeMessage.response400("Không thể thay đổi trạng thái của đơn hàng đã hủy!"));
+                    return Ok(responeMessage.response400("Không thể thay đổi trạng thái của đơn hàng đã hủy!"));
                 }
                 if(status >5 || status < 0)
                 {
-                    return BadRequest(responeMessage.response400("Status mới không hợp lệ!"));
+                    return Ok(responeMessage.response400("Status mới không hợp lệ!"));
                 }
                 if(order.status == status) {
-                    return BadRequest(responeMessage.response400("Status mới bị trùng với status cũ!"));
+                    return Ok(responeMessage.response400("Status mới bị trùng với status cũ!"));
 
                 }
                 order.status = status;
@@ -133,10 +265,10 @@ namespace BookshopAPI.Controllers
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
+                    return Ok(responeMessage.response500);
                 }
             }
-            return BadRequest(responeMessage.response400("OrderId không chính xác!"));
+            return Ok(responeMessage.response400("OrderId không chính xác!"));
         }
     }
 }
