@@ -118,11 +118,11 @@ namespace BookshopAPI.Controllers
                 };
                 myDbContext.OPTs.Add(sendOtp);
                 myDbContext.SaveChanges();
-                return Ok(responeMessage.response200("Gửi OTP thành công"));
+                return Ok(responeMessage.response200(null, "Gửi OTP thành công"));
             }
             else
             {
-                return Ok(responeMessage.response400("Email chưa được đăng ký tài khoản"));
+                return Ok(responeMessage.response400(null, "Email chưa được đăng ký tài khoản"));
             }
         }
         [HttpPost("accuracyOTP")]
