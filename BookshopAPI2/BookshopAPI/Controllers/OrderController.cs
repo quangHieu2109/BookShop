@@ -247,28 +247,28 @@ namespace BookshopAPI.Controllers
             {
                 if(order.status == 3)
                 {
-                    return Ok(responeMessage.response400("Không thể thay đổi trạng thái của đơn hàng đã hủy!"));
+                    return Ok(responeMessage.response400(null, "Không thể thay đổi trạng thái của đơn hàng đã hủy!"));
                 }
                 if(status >5 || status < 0)
                 {
-                    return Ok(responeMessage.response400("Status mới không hợp lệ!"));
+                    return Ok(responeMessage.response400(null, "Status mới không hợp lệ!"));
                 }
                 if(order.status == status) {
-                    return Ok(responeMessage.response400("Status mới bị trùng với status cũ!"));
+                    return Ok(responeMessage.response400(null, "Status mới bị trùng với status cũ!"));
 
                 }
                 order.status = status;
                 int rs =myDbContext.SaveChanges();
                 if(rs > 0)
                 {
-                    return Ok(responeMessage.response200(order, "Cập nhật trạng thái đơn hàng thành công"));
+                    return Ok(responeMessage.response200(null, "Cập nhật trạng thái đơn hàng thành công"));
                 }
                 else
                 {
                     return Ok(responeMessage.response500);
                 }
             }
-            return Ok(responeMessage.response400("OrderId không chính xác!"));
+            return Ok(responeMessage.response400(null, "OrderId không chính xác!"));
         }
     }
 }
