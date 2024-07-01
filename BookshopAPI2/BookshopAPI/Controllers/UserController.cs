@@ -33,7 +33,7 @@ namespace BookshopAPI.Controllers
         public IActionResult getAll()
         {
             
-            return Ok(responeMessage.response200(this.User.FindFirstValue("UserName")));
+            return Ok(responeMessage.response200(myDbContext.Users));
         }
 
         [HttpGet("getInfor")]
