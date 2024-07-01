@@ -56,6 +56,24 @@ namespace BookshopAPI.Controllers
             myDbContext.SaveChanges();
             return Ok(responeMessage.response200);
         }
+        [HttpPost("changePasswordByAdmin")]
+        [Authorize("ADMIN")]
+        public IActionResult changePasswordByAdmin(string username, string password)
+        {
+            
+            var user = myDbContext.Users.SingleOrDefault(x => x.username == username);
+           if(user != null)
+            {
+                user.password = Hash(password);
+                myDbContext.SaveChanges();
+                return Ok(responeMessage.response200);
+            }
+            else
+            {
+                return Ok(responeMessage.response400);
+            }
+        }
+
         [HttpPost("changeInfor")]
         [Authorize]
         public IActionResult changeInfor(UserInfor userInfor)
