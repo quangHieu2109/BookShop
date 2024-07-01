@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using Google.Apis.Auth;
 using Newtonsoft.Json.Linq;
 using System.Management;
+using static System.Net.WebRequestMethods;
 
 
 namespace BookshopAPI.Controllers
@@ -61,17 +62,18 @@ namespace BookshopAPI.Controllers
         public IActionResult changePasswordByAdmin(string username, string password)
         {
             
-            var user = myDbContext.Users.SingleOrDefault(x => x.username == username);
-           if(user != null)
+           var user = myDbContext.Users.SingleOrDefault(x => x.username == username);
+
+            if (user != null)
             {
                 user.password = Hash(password);
+   
                 myDbContext.SaveChanges();
-                return Ok(responeMessage.response200);
+                return Ok(responeMessage.response200(null, "Đổi mật khẩu thành công"));
             }
-            else
-            {
-                return Ok(responeMessage.response400);
-            }
+            return Ok(responeMessage.response400);
+           
+           
         }
 
         [HttpPost("changeInfor")]
