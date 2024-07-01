@@ -87,7 +87,7 @@ namespace BookshopAPI.Controllers
             user.email = userInfor.email;
             user.gender = userInfor.gender;
             myDbContext.SaveChanges();
-            return Ok(responeMessage.response200);
+            return Ok(responeMessage.response200(user));
         }
         [HttpPost("login")]
         public IActionResult login(UserLogin userLogin) {
