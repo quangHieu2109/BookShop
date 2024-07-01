@@ -57,7 +57,7 @@ namespace BookshopAPI.Controllers
             return Ok(responeMessage.response200);
         }
         [HttpPost("changePasswordByAdmin")]
-        [Authorize("ADMIN")]
+        [Authorize(Roles = "ADMIN")]
         public IActionResult changePasswordByAdmin(string username, string password)
         {
             
