@@ -52,7 +52,7 @@ namespace BookshopAPI.Controllers
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
             var user = myDbContext.Users.SingleOrDefault(x => x.id == userId);
-            user.password = password;
+            user.password = Hash(password);
             myDbContext.SaveChanges();
             return Ok(responeMessage.response200);
         }
