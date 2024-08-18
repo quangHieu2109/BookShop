@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `address` (
   CONSTRAINT `address_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table bookshopdb2.address: ~15 rows (approximately)
+-- Dumping data for table bookshopdb2.address: ~14 rows (approximately)
 INSERT INTO `address` (`id`, `userId`, `houseNumber`, `province`, `district`, `ward`) VALUES
 	(33, 1, '123', 'Hà Giang', 'HUYỆN ĐỒNG VĂN', 'XÃ TẢ LỦNG'),
 	(34, 1, '123', 'Nam Ðịnh', 'HUYỆN NAM TRỰC', 'XÃ NAM THẮNG'),
@@ -760,7 +760,9 @@ CREATE TABLE IF NOT EXISTS `otp` (
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table bookshopdb2.otp: ~1 rows (approximately)
+-- Dumping data for table bookshopdb2.otp: ~0 rows (approximately)
+INSERT INTO `otp` (`email`, `otp`, `accuracy`, `endAt`) VALUES
+	('21130356@st.hcmuaf.edu.vn', '103588', 0, '2024-06-25 05:20:47');
 
 -- Dumping structure for table bookshopdb2.product
 CREATE TABLE IF NOT EXISTS `product` (
@@ -1291,6 +1293,20 @@ INSERT INTO `product_review` (`id`, `userId`, `productId`, `ratingScore`, `conte
 	(151, 1, 22, 3, '11111111111111111111111111', b'1', '2024-04-05 05:29:18', NULL),
 	(152, 1, 93, 4, 'sddddddddddddddđ', b'0', '2024-05-26 08:21:03', '2024-05-26 08:21:03');
 
+-- Dumping structure for table bookshopdb2.refresh_token
+CREATE TABLE IF NOT EXISTS `refresh_token` (
+  `userId` bigint(20) NOT NULL AUTO_INCREMENT,
+  `refreshToken` text NOT NULL,
+  `endAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`userId`),
+  CONSTRAINT `FK__user` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=1714833219718 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table bookshopdb2.refresh_token: ~1 rows (approximately)
+INSERT INTO `refresh_token` (`userId`, `refreshToken`, `endAt`) VALUES
+	(1, '2f0c2f0e-e9d1-49bd-9179-1b1ec4eb9b36', '2024-09-17 03:14:40'),
+	(1714833219717, '39ec323a-1a25-4a38-8a69-31da3d22dad6', '2024-09-17 03:10:32');
+
 -- Dumping structure for table bookshopdb2.user
 CREATE TABLE IF NOT EXISTS `user` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -1310,14 +1326,14 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 -- Dumping data for table bookshopdb2.user: ~8 rows (approximately)
 INSERT INTO `user` (`id`, `username`, `password`, `fullname`, `email`, `phoneNumber`, `gender`, `role`, `createAt`) VALUES
-	(1, 'user1', '202CB962AC59075B964B07152D234B70', 'Dunn Mcpherson', 'dunnmcpherson@recrisys.com', '0989894900', b'0', 'ADMIN', '2024-06-14 10:53:31'),
+	(1, 'user1', '202CB962AC59075B964B07152D234B70', 'Dunn Mcpherson', 'dunnmcpherson@recrisys.com', '0989894900', b'0', 'ADMIN', '2024-07-01 09:48:33'),
 	(2, 'user2', '202CB962AC59075B964B07152D234B70', 'Foreman Carter', 'foremancarter@recrisys.com', '0993194154', b'0', 'EMPLOYEE', '2024-03-27 14:08:39'),
 	(3, 'user3', '202CB962AC59075B964B07152D234B70', 'Felecia Cabrera', 'feleciacabrera@recrisys.com', '0930174351', b'1', 'EMPLOYEE', '2024-03-27 14:08:39'),
 	(4, 'user4', '202CB962AC59075B964B07152D234B70', 'Juliette Mcdowell', 'juliettemcdowell@recrisys.com', '0911925643', b'1', 'CUSTOMER', '2024-03-27 14:08:39'),
 	(5, 'user5', '202CB962AC59075B964B07152D234B70', 'Vilma Spencer', 'vilmaspencer@recrisys.com', '0987509391', b'1', 'CUSTOMER', '2024-03-27 14:08:39'),
 	(6, 'hao', '32791E666FEF96B588DB16200D5FDA94', 'Quang Hiu', 'abc@gmail.com', '0123123123', b'0', 'CUSTOMER', '2024-03-27 14:08:39'),
 	(1714833219716, 'user11', '202CB962AC59075B964B07152D234B70', 'HIu', 'hh@fm.cm', '0912123123', b'0', 'CUSTOMER', '2024-05-31 06:40:04'),
-	(1714833219717, 'admin', '4297F44B13955235245B2497399D7A93', 'Admin Test', 'admin@admin.com', '0917294910', b'0', 'ADMIN', '2024-06-19 19:03:13');
+	(1714833219717, 'admin', '4297F44B13955235245B2497399D7A93', 'Admin Test', '21130356@st.hcmuaf.edu.vn', '0917294910', b'0', 'ADMIN', '2024-07-01 15:39:47');
 
 -- Dumping structure for table bookshopdb2.voucher
 CREATE TABLE IF NOT EXISTS `voucher` (

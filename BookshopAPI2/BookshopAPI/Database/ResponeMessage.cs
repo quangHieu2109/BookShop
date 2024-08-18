@@ -1,11 +1,11 @@
-﻿namespace BookshopAPI.Service
+﻿namespace BookshopAPI.Models
 {
     public class ResponeMessage
     {
-        public bool status {  get; set; }
+        public bool status { get; set; }
         public string message { get; set; }
-        public Object data {  get; set; }
-        public ResponeMessage response500(Object? data, string? msg = "Có lỗi từ server, vui lòng thử lại sau")
+        public object data { get; set; }
+        public ResponeMessage response500(object? data, string? msg = "Có lỗi từ server, vui lòng thử lại sau")
         {
             return new ResponeMessage
             {
@@ -14,7 +14,7 @@
                 data = data
             };
         }
-        public ResponeMessage response200(Object? data, string? msg = "Success")
+        public ResponeMessage response200(object? data, string? msg = "Success")
         {
             return new ResponeMessage
             {
@@ -23,7 +23,7 @@
                 data = data
             };
         }
-        public ResponeMessage response400(Object? data, string? msg = "Bad request")
+        public ResponeMessage response400(object? data, string? msg = "Bad request")
         {
             return new ResponeMessage
             {
@@ -33,7 +33,7 @@
             };
         }
 
-        public ResponeMessage response404(Object? data, string? msg = "Not found")
+        public ResponeMessage response404(object? data, string? msg = "Not found")
         {
             return new ResponeMessage
             {

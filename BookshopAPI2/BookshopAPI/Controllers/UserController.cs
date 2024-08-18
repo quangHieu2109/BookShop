@@ -17,6 +17,7 @@ using Google.Apis.Auth;
 using Newtonsoft.Json.Linq;
 using System.Management;
 using static System.Net.WebRequestMethods;
+using BookshopAPI.Database;
 
 
 namespace BookshopAPI.Controllers
@@ -78,7 +79,7 @@ namespace BookshopAPI.Controllers
 
         [HttpPost("changeInfor")]
         [Authorize]
-        public IActionResult changeInfor(UserInfor userInfor)
+        public async Task<IActionResult> ChangeInfor(UserInfor userInfor)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
             var user = myDbContext.Users.SingleOrDefault(x => x.id == userId);
@@ -86,7 +87,7 @@ namespace BookshopAPI.Controllers
             user.phoneNumber = userInfor.phoneNumber;
             user.email = userInfor.email;
             user.gender = userInfor.gender;
-            myDbContext.SaveChanges();
+            await myDbContext.SaveChangesAsync();
             return Ok(responeMessage.response200(user));
         }
         [HttpPost("login")]
@@ -293,15 +294,33 @@ namespace BookshopAPI.Controllers
             {
                 return Ok(responeMessage.response400("Token không chính xác!"));
             }
-            
-            
-            
-           
-
-
 
         }
-        private String generateToken(User user)
+        [HttpPost("refreshToken")]
+        public IActionResult RefreshToken(string refreshToken)
+        {
+            var refreshTK = myDbContext.RefreshTokens.SingleOrDefault(x => x.refreshToken == refreshToken);
+            if(refreshTK == null)
+            {
+                return Ok(responeMessage.response400(null, "RefreshToken không chính xác!"));
+            }
+            else
+            {
+                if(refreshTK.endAt < DateTime.Now)
+                {
+                    return Ok(responeMessage.response400(null, "RefreshToken đã hết hạn!"));
+                }
+                else
+                {
+                    User user = myDbContext.Users.SingleOrDefault(x => x.id == refreshTK.userId);
+                    LoginResponse loginResponse = generateToken(user);
+                    return Ok(responeMessage.response200(loginResponse));
+
+                }
+            }
+            
+        }
+        private LoginResponse generateToken(User user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
             var secretKeyBytes = Encoding.UTF8.GetBytes(configuration["AppSettings:SecretKey"]);
@@ -315,7 +334,7 @@ namespace BookshopAPI.Controllers
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(ClaimTypes.Role, user.role),
 
-                    
+
                      new Claim("Id", user.id+"")
                     
                     // role
@@ -324,14 +343,32 @@ namespace BookshopAPI.Controllers
                     
 
                 }),
-                Expires = DateTime.UtcNow.AddHours(5),
+                Expires = DateTime.UtcNow.AddSeconds(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes), SecurityAlgorithms.HmacSha256Signature)
 
             };
             var token = jwtTokenHandler.CreateToken(tokenDesciption);
             var accessToken = jwtTokenHandler.WriteToken(token);
-            
-            return accessToken;
+            var refreshTK = myDbContext.RefreshTokens.SingleOrDefault(x => x.userId == user.id);
+            if (refreshTK == null)
+            {
+                refreshTK = new RefreshToken
+                {
+                    userId = user.id,
+                    refreshToken = Guid.NewGuid().ToString()
+                   
+                };
+                myDbContext.RefreshTokens.Add(refreshTK);
+
+                myDbContext.SaveChanges();
+            }
+            refreshTK.endAt = DateTime.UtcNow.AddDays(30);
+            myDbContext.SaveChanges();
+            return new LoginResponse
+            {
+                accessToken = accessToken,
+                refreshToken = refreshTK.refreshToken
+            };
         }
         public static string Hash(string s)
         {
@@ -355,5 +392,6 @@ namespace BookshopAPI.Controllers
             }
             return hashed;
         }
+        
     }
 }
