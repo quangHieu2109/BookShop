@@ -18,6 +18,7 @@ using Newtonsoft.Json.Linq;
 using System.Management;
 using static System.Net.WebRequestMethods;
 using BookshopAPI.Database;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace BookshopAPI.Controllers
@@ -32,7 +33,7 @@ namespace BookshopAPI.Controllers
 
         [HttpGet("getAllUser")]
         [Authorize(Roles ="ADMIN")]
-        public IActionResult getAll()
+        public async Task<IActionResult> getAll()
         {
             
             return Ok(responeMessage.response200(myDbContext.Users));
@@ -40,36 +41,36 @@ namespace BookshopAPI.Controllers
 
         [HttpGet("getInfor")]
         [Authorize]
-        public IActionResult getInfor()
+        public async Task<IActionResult> getInfor()
         {
             
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var user = myDbContext.Users.SingleOrDefault(x => x.id == userId);
+            var user =await myDbContext.Users.SingleOrDefaultAsync(x => x.id == userId);
             return Ok(responeMessage.response200(user));
         }
 
         [HttpPost("changePassword")]
         [Authorize]
-        public IActionResult changePassword(string password)
+        public async Task<IActionResult> changePassword(string password)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var user = myDbContext.Users.SingleOrDefault(x => x.id == userId);
+            var user = await myDbContext.Users.SingleOrDefaultAsync(x => x.id == userId);
             user.password = Hash(password);
-            myDbContext.SaveChanges();
+            await myDbContext.SaveChangesAsync();;
             return Ok(responeMessage.response200);
         }
         [HttpPost("changePasswordByAdmin")]
         [Authorize(Roles = "ADMIN")]
-        public IActionResult changePasswordByAdmin(string username, string password)
+        public async Task<IActionResult> changePasswordByAdmin(string username, string password)
         {
             
-           var user = myDbContext.Users.SingleOrDefault(x => x.username == username);
+           var user = await myDbContext.Users.SingleOrDefaultAsync(x => x.username == username);
 
             if (user != null)
             {
                 user.password = Hash(password);
    
-                myDbContext.SaveChanges();
+                await myDbContext.SaveChangesAsync();;
                 return Ok(responeMessage.response200(null, "Đổi mật khẩu thành công"));
             }
             return Ok(responeMessage.response400);
@@ -82,7 +83,7 @@ namespace BookshopAPI.Controllers
         public async Task<IActionResult> ChangeInfor(UserInfor userInfor)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var user = myDbContext.Users.SingleOrDefault(x => x.id == userId);
+            var user = await myDbContext.Users.SingleOrDefaultAsync(x => x.id == userId);
             user.fullName = userInfor.fullName;
             user.phoneNumber = userInfor.phoneNumber;
             user.email = userInfor.email;
@@ -91,8 +92,8 @@ namespace BookshopAPI.Controllers
             return Ok(responeMessage.response200(user));
         }
         [HttpPost("login")]
-        public IActionResult login(UserLogin userLogin) {
-               var user = myDbContext.Users.SingleOrDefault(x => x.username == userLogin.username);
+        public async Task<IActionResult> login(UserLogin userLogin) {
+               var user = await myDbContext.Users.SingleOrDefaultAsync(x => x.username == userLogin.username);
             if (user == null)
             {
                 return BadRequest(responeMessage.response400("Tài khoản không chính xác"));
@@ -105,16 +106,16 @@ namespace BookshopAPI.Controllers
                 }
                 else
                 {
-                    var accessToken = generateToken(user);
+                    var accessToken =await generateToken(user);
                     return Ok(responeMessage.response200(accessToken, "Đăng nhập thành công")) ;
                 }
             }
         }
 
         [HttpPost("sendOTP/email={email}")]
-        public IActionResult Otp(string email)
+        public async Task<IActionResult> Otp(string email)
         {
-            if(myDbContext.Users.SingleOrDefault(x => x.email == email) != null)
+            if (await myDbContext.Users.SingleOrDefaultAsync(x => x.email == email) != null)
             {
                 var senMail = new SendMail();
                 var rd = new Random();
@@ -124,11 +125,11 @@ namespace BookshopAPI.Controllers
                     otp += rd.Next(0, 9);
                 }
                 senMail.SendEmail(email, otp);
-                var sendOtp = myDbContext.OPTs.SingleOrDefault(x => x.email == email);
+                var sendOtp = await myDbContext.OPTs.SingleOrDefaultAsync(x => x.email == email);
                 if(sendOtp != null)
                 {
                     myDbContext.OPTs.Remove(sendOtp);
-                    myDbContext.SaveChanges();
+                    await myDbContext.SaveChangesAsync();;
                 }
                 sendOtp = new OTP
                 {
@@ -138,7 +139,7 @@ namespace BookshopAPI.Controllers
                     endAt = DateTime.Now.AddMinutes(5)
                 };
                 myDbContext.OPTs.Add(sendOtp);
-                myDbContext.SaveChanges();
+                await myDbContext.SaveChangesAsync();;
                 return Ok(responeMessage.response200(null, "Gửi OTP thành công"));
             }
             else
@@ -147,9 +148,9 @@ namespace BookshopAPI.Controllers
             }
         }
         [HttpPost("accuracyOTP")]
-        public IActionResult accuracyOtp(AccuracyOtp accuracyOtp)
+        public async Task<IActionResult> accuracyOtp(AccuracyOtp accuracyOtp)
         {
-            var otp = myDbContext.OPTs.SingleOrDefault(x => x.email == accuracyOtp.email);
+            var otp = await myDbContext.OPTs.SingleOrDefaultAsync(x => x.email == accuracyOtp.email);
             if (otp == null)
             {
                 return Ok(responeMessage.response400(null, "Email không chính xác"));
@@ -174,7 +175,7 @@ namespace BookshopAPI.Controllers
                         {
                             otp.accuracy = 1;
                             otp.endAt = DateTime.Now.AddMinutes(5);
-                            myDbContext.SaveChanges();
+                            await myDbContext.SaveChangesAsync();;
                             return Ok(responeMessage.response200(null, "Xác thực OTP thành công"));
                         }
                     }
@@ -182,9 +183,9 @@ namespace BookshopAPI.Controllers
             }
         }
         [HttpPost("changePasswordByOTP")]
-        public IActionResult changePasswordByOTP(ChangePasswordOtp changePasswordOtp)
+        public async Task<IActionResult> changePasswordByOTP(ChangePasswordOtp changePasswordOtp)
         {
-            var otp = myDbContext.OPTs.SingleOrDefault(x => x.email ==  changePasswordOtp.email);
+            var otp = await myDbContext.OPTs.SingleOrDefaultAsync(x => x.email == changePasswordOtp.email);
             if(otp == null)
             {
                 return Ok(responeMessage.response400(null, "Email không chính xác"));
@@ -203,18 +204,18 @@ namespace BookshopAPI.Controllers
                     }
                     else
                     {
-                        var user = myDbContext.Users.SingleOrDefault(x => x.email == otp.email);
+                        var user = await myDbContext.Users.SingleOrDefaultAsync(x => x.email == otp.email);
                         user.password = Hash(changePasswordOtp.password);
                         myDbContext.OPTs.Remove(otp);
-                        myDbContext.SaveChanges();
+                        await myDbContext.SaveChangesAsync();;
                         return Ok(responeMessage.response200(null, "Đổi mật khẩu thành công"));
                     }
                 }
             }
         }
         [HttpPost("register")]
-        public IActionResult register(UserRegister userRegister) {
-            var user = myDbContext.Users.SingleOrDefault(x => x.username == userRegister.username);
+        public async Task<IActionResult> register(UserRegister userRegister) {
+            var user = await myDbContext.Users.SingleOrDefaultAsync(x => x.username == userRegister.username);
             if (user != null) {
                 return BadRequest(responeMessage.response400("Username đã tồn tại!"));
             }else
@@ -233,8 +234,8 @@ namespace BookshopAPI.Controllers
                         fullName = userRegister.fullName, 
                         email = userRegister.email, 
                         role = "CUSTOMER" };
-                    myDbContext.Users.Add(user);
-                    var rs =  myDbContext.SaveChanges();
+                   await myDbContext.Users.AddAsync(user);
+                    var rs =  await myDbContext.SaveChangesAsync();;
                     if (rs > 0)
                     {
                         var cart = new Cart
@@ -244,8 +245,8 @@ namespace BookshopAPI.Controllers
                             createdAt = DateTime.Now
 
                         };
-                        myDbContext.Carts.Add(cart);
-                        myDbContext.SaveChanges();
+                        await myDbContext.Carts.AddAsync(cart);
+                        await myDbContext.SaveChangesAsync();;
                         
                         return Ok(responeMessage.response200(user, "Đăng ký thành công"));
                     }
@@ -280,8 +281,8 @@ namespace BookshopAPI.Controllers
                         createAt = DateTime.Now,
                         gender = 1
                     };
-                    myDbContext.Users.Add(user);
-                    myDbContext.SaveChanges();
+                    await myDbContext.Users.AddAsync(user);
+                    await myDbContext.SaveChangesAsync();
 
                 }
 
@@ -297,9 +298,9 @@ namespace BookshopAPI.Controllers
 
         }
         [HttpPost("refreshToken")]
-        public IActionResult RefreshToken(string refreshToken)
+        public async Task<IActionResult> RefreshToken(string refreshToken)
         {
-            var refreshTK = myDbContext.RefreshTokens.SingleOrDefault(x => x.refreshToken == refreshToken);
+            var refreshTK = await myDbContext.RefreshTokens.SingleOrDefaultAsync(x => x.refreshToken == refreshToken);
             if(refreshTK == null)
             {
                 return Ok(responeMessage.response400(null, "RefreshToken không chính xác!"));
@@ -312,15 +313,15 @@ namespace BookshopAPI.Controllers
                 }
                 else
                 {
-                    User user = myDbContext.Users.SingleOrDefault(x => x.id == refreshTK.userId);
-                    LoginResponse loginResponse = generateToken(user);
+                    User user = await myDbContext.Users.SingleOrDefaultAsync(x => x.id == refreshTK.userId);
+                    LoginResponse loginResponse =await generateToken(user);
                     return Ok(responeMessage.response200(loginResponse));
 
                 }
             }
             
         }
-        private LoginResponse generateToken(User user)
+        private async Task<LoginResponse> generateToken(User user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
             var secretKeyBytes = Encoding.UTF8.GetBytes(configuration["AppSettings:SecretKey"]);
@@ -358,12 +359,13 @@ namespace BookshopAPI.Controllers
                     refreshToken = Guid.NewGuid().ToString()
                    
                 };
-                myDbContext.RefreshTokens.Add(refreshTK);
+                await myDbContext.RefreshTokens.AddAsync(refreshTK);
 
-                myDbContext.SaveChanges();
+                await myDbContext.SaveChangesAsync();;
             }
             refreshTK.endAt = DateTime.UtcNow.AddDays(30);
-            myDbContext.SaveChanges();
+            refreshTK.refreshToken = Guid.NewGuid().ToString();
+            await myDbContext.SaveChangesAsync();;
             return new LoginResponse
             {
                 accessToken = accessToken,

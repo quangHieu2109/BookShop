@@ -4,6 +4,7 @@ using Google.Protobuf.Collections;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using System.Security.Claims;
 using System.Xml;
@@ -20,33 +21,33 @@ namespace BookshopAPI.Controllers
         private ProductRating productRating = new ProductRating();
 
         [HttpGet("getAllProduct")]
-        public IActionResult getAllProduct()
+        public async Task<IActionResult> getAllProduct()
         {
             long userId=-1;
             if(this.User.FindFirstValue("Id") != null)
             {
                 userId  = long.Parse(this.User.FindFirstValue("Id"));
             }
-            var products = myDbContext.Products.ToList();
+            var products = await myDbContext.Products.ToListAsync();
             List<Object> ProductRatings = new List<Object>();
             foreach (var product in products)
             {
-                ProductRatings.Add(productRating.GetProductRating(product, userId));
+                ProductRatings.Add(await productRating.GetProductRating(product, userId));
             }
             return Ok(responeMessage.response200(ProductRatings));
         }
         [HttpGet("getWishList")]
         [Authorize]
-        public IActionResult getWishList()
+        public async Task<IActionResult> getWishList()
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var wishlist = (from w in myDbContext.WishListItems
+            var wishlist = await (from w in myDbContext.WishListItems
                            where w.userId == userId
-                           select w).ToList();
+                           select w).ToListAsync();
             List<Object> products = new List<Object>();
             foreach(var wish in wishlist)
             {
-                products.Add(productRating.GetProductRating(myDbContext.Products.SingleOrDefault(x => x.id == wish.productId), userId));
+                products.Add(await productRating.GetProductRating( await myDbContext.Products.SingleOrDefaultAsync(x => x.id == wish.productId), userId));
 
             }
             if(products.Count > 0)
@@ -54,66 +55,66 @@ namespace BookshopAPI.Controllers
                 
                 return Ok(responeMessage.response200(products));
             }
-            return NotFound(responeMessage.response404);
+            return Ok(responeMessage.response404);
 
         }
         [HttpGet("getProductByName")]
-        public IActionResult getByName(string name)
+        public async Task<IActionResult> getByName(string name)
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
             {
                 userId = long.Parse(this.User.FindFirstValue("Id"));
             }
-            var products = myDbContext.Products.Where(x =>
-            x.name.Contains(name)).ToList();
+            var products =await myDbContext.Products.Where(x =>
+            x.name.Contains(name)).ToListAsync();
             if (products != null)
             {
                 List<Object> result = new List<Object>();
                 foreach(var product in products)
                 {
-                    result.Add(productRating.GetProductRating(product, userId));
+                    result.Add(await productRating.GetProductRating(product, userId));
                 }
                 return Ok(responeMessage.response200(result));
             }
             else
             {
-                return NotFound(responeMessage.response404);
+                return Ok(responeMessage.response404);
             }
 
         }
         [HttpGet("getSimilarProduct")]
-        public IActionResult getSimilarProduct(long productId)
+        public async Task<IActionResult> getSimilarProduct(long productId)
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
             {
                 userId = long.Parse(this.User.FindFirstValue("Id"));
             }
-            var category_product = myDbContext.Product_Categories.SingleOrDefault(x => x.productId == productId);
+            var category_product =await myDbContext.Product_Categories.SingleOrDefaultAsync(x => x.productId == productId);
             if (category_product != null)
             {
-                var products = (from p in myDbContext.Products
+                var products =await (from p in myDbContext.Products
                                join c in myDbContext.Product_Categories on p.id equals c.productId
                                where c.categoryId == category_product.categoryId
-                               select  new Product().convert(p)).ToList() ;
+                               select  new Product().convert(p)).ToListAsync() ;
                 
                 if (products != null)
                 {
                     List<Object> result = new List<Object>();
                     foreach (var product in products)
                     {
-                        result.Add(productRating.GetProductRating(product, userId));
+                        result.Add(await productRating.GetProductRating(product, userId));
                     }
                     return Ok(responeMessage.response200(result));
                 }
             }
-            return NotFound(responeMessage.response404);
+            return Ok(responeMessage.response404);
         }
 
 
         [HttpGet("getProduct/categoryId={categoryId}")]
-        public IActionResult getProductByCategoryId(long categoryId)
+        public async Task<IActionResult> getProductByCategoryId(long categoryId)
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
@@ -129,22 +130,22 @@ namespace BookshopAPI.Controllers
                 List<Object> result = new List<Object>();
                 foreach (var product in products)
                 {
-                    result.Add(productRating.GetProductRating(product, userId));
+                    result.Add(await productRating.GetProductRating(product, userId));
                 }
                 return Ok(responeMessage.response200(result));
             }
             
-            return NotFound(responeMessage.response404);
+            return Ok(responeMessage.response404);
         }
         [HttpGet("getProduct/categoryName={categoryName}")]
-        public IActionResult getProductByCategoryName(String categoryName)
+        public async Task<IActionResult> getProductByCategoryName(String categoryName)
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
             {
                 userId = long.Parse(this.User.FindFirstValue("Id"));
             }
-            var category = myDbContext.Categories.FirstOrDefault(x => x.name.Contains(categoryName));
+            var category =await myDbContext.Categories.FirstOrDefaultAsync(x => x.name.Contains(categoryName));
             if(category != null)
             {
                 var products = from p in myDbContext.Products
@@ -156,37 +157,37 @@ namespace BookshopAPI.Controllers
                     List<Object> result = new List<Object>();
                     foreach (var product in products)
                     {
-                        result.Add(productRating.GetProductRating(product, userId));
+                        result.Add(await productRating.GetProductRating(product, userId));
                     }
                     return Ok(responeMessage.response200(result));
                 }
             }
 
-            return NotFound(responeMessage.response404);
+            return Ok(responeMessage.response404);
         }
 
 
         [HttpPut("updateProduct")]
         [Authorize(Roles = "ADMIN")]
-        public IActionResult update(Product product)
+        public async Task<IActionResult> update(Product product)
         {
-            var _product = myDbContext.Products.SingleOrDefault(x => (x.id) == product.id);
+            var _product =await myDbContext.Products.SingleOrDefaultAsync(x => (x.id) == product.id);
             if (_product != null)
             {
                 _product = product;
-                var rs = myDbContext.SaveChanges();
+                var rs =await myDbContext.SaveChangesAsync();
                 if (rs > 0)
                 {
                     return Ok(responeMessage.response200(_product));
                 }
                 else
                 {
-                    return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
+                    return Ok(responeMessage.response500);
                 }
             }
             else
             {
-                return NotFound(responeMessage.response404);
+                return Ok(responeMessage.response404);
             }
 
 
@@ -194,19 +195,19 @@ namespace BookshopAPI.Controllers
 
         [HttpPost("addWishList/productId={productId}")]
         [Authorize]
-        public IActionResult AddWishList(long productId)
+        public async Task<IActionResult> AddWishList(long productId)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var wishlist = myDbContext.WishListItems.SingleOrDefault(x => x.productId == productId && x.userId == userId);
-            var product = myDbContext.Products.SingleOrDefault(x => x.id == productId);
+            var wishlist =await myDbContext.WishListItems.SingleOrDefaultAsync(x => x.productId == productId && x.userId == userId);
+            var product =await myDbContext.Products.SingleOrDefaultAsync(x => x.id == productId);
             if (product == null)
             {
-                return BadRequest(responeMessage.response400("Mã sản phẩm không chính xác"));
+                return Ok(responeMessage.response400("Mã sản phẩm không chính xác"));
             }
             
             if (wishlist != null)
             {
-                return BadRequest(responeMessage.response400("Sản phẩm đã có trong danh sách yêu thích"));
+                return Ok(responeMessage.response400("Sản phẩm đã có trong danh sách yêu thích"));
             }
             else
             {
@@ -216,13 +217,13 @@ namespace BookshopAPI.Controllers
                     productId = productId,
                     createdAt = DateTime.Now
                 };
-                myDbContext.WishListItems.Add(wishlist);
-                int rs =  myDbContext.SaveChanges();
+                await myDbContext.WishListItems.AddAsync(wishlist);
+                int rs =await  myDbContext.SaveChangesAsync();
                 if (rs > 0)
                 {
                     return Ok(responeMessage.response200(wishlist));
                 }
-                return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
+                return Ok(responeMessage.response500);
             }
             
 
@@ -230,27 +231,27 @@ namespace BookshopAPI.Controllers
 
         [HttpDelete("deleteWishList/productId={productId}")]
         [Authorize]
-        public IActionResult DeleteWishList(long productId)
+        public async Task<IActionResult> DeleteWishList(long productId)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
             
-            var product = myDbContext.Products.SingleOrDefault(x => x.id == productId);
+            var product =await myDbContext.Products.SingleOrDefaultAsync(x => x.id == productId);
             if (product == null)
             {
-                return BadRequest(responeMessage.response400("Mã sản phẩm không chính xác"));
+                return Ok(responeMessage.response400("Mã sản phẩm không chính xác"));
             }
             else
             {
-                var wishlist = myDbContext.WishListItems.SingleOrDefault(x => x.productId == productId && x.userId == userId);
+                var wishlist =await myDbContext.WishListItems.SingleOrDefaultAsync(x => x.productId == productId && x.userId == userId);
                 if (wishlist != null)
                 {
                     myDbContext.WishListItems.Remove(wishlist);
-                    myDbContext.SaveChanges();
+                    await myDbContext.SaveChangesAsync();
                     return Ok(responeMessage.response200("Xóa sản phẩm khỏi danh sách yêu thích thành công"));
                 }
                 else
                 {
-                    return BadRequest(responeMessage.response400("Sản phẩm không có trong danh sách yêu thích!"));
+                    return Ok(responeMessage.response400("Sản phẩm không có trong danh sách yêu thích!"));
                 }
 
                
@@ -258,10 +259,10 @@ namespace BookshopAPI.Controllers
             
 
         }
-            [HttpGet("getByOrderRating")]
-        public IActionResult getRecommend()
+        [HttpGet("getByOrderRating")]
+        public async Task<IActionResult> getRecommend()
         {
-            var productRatings = myDbContext.ProductReviews
+            var productRatings =await myDbContext.ProductReviews
                      .GroupBy(pr => pr.productId)
                      .Select(g => new 
                      {
@@ -270,14 +271,14 @@ namespace BookshopAPI.Controllers
                      })
                      .OrderByDescending(x => x.rating)
                      .Take(10)
-                     .ToList();
+                     .ToListAsync();
             return Ok(responeMessage.response200(productRatings));
         }
         [HttpGet("getRecommendByOrderRating/productId={productId}")]
-        public IActionResult getRecommendByOrderRating(long productId)
+        public async Task<IActionResult> getRecommendByOrderRating(long productId)
         {
-            var category_product = myDbContext.Product_Categories.SingleOrDefault(x => x.productId == productId);
-            var productRatings = myDbContext.ProductReviews
+            var category_product =await myDbContext.Product_Categories.SingleOrDefaultAsync(x => x.productId == productId);
+            var productRatings =await myDbContext.ProductReviews
                      .GroupBy(pr => pr.productId)
                      .Select(g => new 
                      {
@@ -287,7 +288,7 @@ namespace BookshopAPI.Controllers
                      
                      .OrderByDescending(x => x.rating)
                      .Take(10)
-                     .ToList();
+                     .ToListAsync();
             var productRatings2 = from pr in productRatings
                                   where (myDbContext.Product_Categories.Single(x => x.productId == pr.Product.id).categoryId == category_product.categoryId)
                                   select pr;
@@ -295,14 +296,14 @@ namespace BookshopAPI.Controllers
         }
 
         [HttpGet("getTopSell")]
-        public IActionResult getTopSell()
+        public async Task<IActionResult> getTopSell()
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
             {
                 userId = long.Parse(this.User.FindFirstValue("Id"));
             }
-            var products = myDbContext.OrderItems
+            var products =await myDbContext.OrderItems
                      .GroupBy(pr => pr.productId)
                      .Select(g => new 
                      {
@@ -312,71 +313,71 @@ namespace BookshopAPI.Controllers
                      })
                      .OrderByDescending(x => x.Quantity)
                      .Take(10)
-                     .ToList();
+                     .ToListAsync();
             List<Object> result = new List<Object>();
             foreach (var product in products)
             {
                 result.Add(new
                 {
-                    product= productRating.GetProductRating(product.Product, userId).Product,
+                    product=productRating.GetProductRating(product.Product, userId).Result.Product,
                     quantity=product.Quantity,
-                    rating = productRating.GetProductRating(product.Product, userId).rating,
-                    wishlist = productRating.GetProductRating(product.Product, userId).wishlist
+                    rating = productRating.GetProductRating(product.Product, userId).Result.rating,
+                    wishlist = productRating.GetProductRating(product.Product, userId).Result.wishlist
                 });
             }
             return Ok(responeMessage.response200(result));
         }
 
         [HttpGet("getReleases")]
-        public IActionResult getReleases()
+        public async Task<IActionResult> getReleases()
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
             {
                 userId = long.Parse(this.User.FindFirstValue("Id"));
             }
-            var products = myDbContext.Products
+            var products =await myDbContext.Products
                         
                      .OrderByDescending(x => x.createdAt)
                      .Take(10)
-                     .ToList();
+                     .ToListAsync();
             List<Object> result = new List<Object>();
             foreach (var product in products)
             {
-                result.Add(productRating.GetProductRating(product, userId ));
+                result.Add(await productRating.GetProductRating(product, userId ));
             }
             return Ok(responeMessage.response200(result));
         }
         [HttpGet("getById/productId={productId}")]
-        public IActionResult getById(long productId)
+        public async Task<IActionResult> getById(long productId)
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
             {
                 userId = long.Parse(this.User.FindFirstValue("Id"));
             }
-            var product = myDbContext.Products
-                            .SingleOrDefault(x => x.id == productId)
+            var product =await myDbContext.Products
+                            .SingleOrDefaultAsync(x => x.id == productId)
                        ;
             if(product == null)
             {
-                return NotFound(responeMessage.response404);
+                return Ok(responeMessage.response404);
             }
-            var  result = (productRating.GetProductRating(product, userId));
+            var  result = (await productRating.GetProductRating(product, userId));
             
             return Ok(responeMessage.response200(result));
         }
         [HttpGet("getPerchased")]
         [Authorize]
-        public IActionResult getPerchased()
+        public async Task<IActionResult> getPerchased()
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var orderItemss = (from o in myDbContext.Orders
+            var orderItemss =await (from o in myDbContext.Orders
                                join oi in myDbContext.OrderItems on o.id equals oi.orderId
 
                                where o.userId == userId
-                               select oi).ToList();
-            var products = (from oi in orderItemss
+                               select oi).ToListAsync();
+            var products =(from oi in orderItemss
                             join p in myDbContext.Products on oi.productId equals p.id
                             select new Product().convert(p))
                             .GroupBy(x => x.id)
@@ -385,7 +386,7 @@ namespace BookshopAPI.Controllers
             List<Object> result = new List<Object>();
             foreach (var product in products)
             {
-                result.Add(productRating.GetProductRating(product, userId ));
+                result.Add(await productRating.GetProductRating(product, userId ));
             }
             return Ok(responeMessage.response200(result));
            

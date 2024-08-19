@@ -41,10 +41,10 @@ namespace BookshopAPI.Models
         public Product Product { get; set; }
         public double? rating { get; set; }
         public bool wishlist { get; set; } 
-        public ProductRating GetProductRating(Product p, long userId)
+        public async Task<ProductRating> GetProductRating(Product p, long userId)
         {
-            bool _wishlist = (myDbContext.WishListItems.FirstOrDefault(x => x.productId == p.id && x.userId == userId)) != null;
-            var productReview = myDbContext.ProductReviews.FirstOrDefault(x => x.productId == p.id);
+            bool _wishlist = await (myDbContext.WishListItems.FirstOrDefaultAsync(x => x.productId == p.id && x.userId == userId)) != null;
+            var productReview = await myDbContext.ProductReviews.FirstOrDefaultAsync(x => x.productId == p.id);
             if(productReview == null)
             {
                 return new ProductRating
@@ -54,9 +54,9 @@ namespace BookshopAPI.Models
                 };
             }
             else { 
-            var productRatings = myDbContext.ProductReviews
+            var productRatings = await myDbContext.ProductReviews
                     .Where(pr => pr.productId == p.id)
-                    .Average(x => x.ratingScore);
+                    .AverageAsync(x => x.ratingScore);
             
             return new ProductRating
             {

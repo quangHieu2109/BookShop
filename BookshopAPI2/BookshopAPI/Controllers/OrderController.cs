@@ -2,6 +2,7 @@
 using BookshopAPI.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace BookshopAPI.Controllers
@@ -15,27 +16,27 @@ namespace BookshopAPI.Controllers
         private ResponeMessage responeMessage = new ResponeMessage();
         [HttpGet("getAllOrders")]
         [Authorize(Roles ="ADMIN, EMPLOYEE")]
-        public IActionResult getAll()
+        public async Task<IActionResult> getAll()
         {
-            return Ok(responeMessage.response200(myDbContext.Orders));
+            return Ok(responeMessage.response200(await myDbContext.Orders.ToListAsync()));
         }
 
         [HttpGet("getOrderByStatus/status={status}")]
         [Authorize(Roles = "ADMIN, EMPLOYEE")]
-        public IActionResult getOrderByStatus(int status)
+        public async Task<IActionResult> getOrderByStatus(int status)
         {
-            return Ok(responeMessage.response200(myDbContext.Orders.Where(x => x.status == status).ToList()));
+            return Ok(responeMessage.response200(await myDbContext.Orders.Where(x => x.status == status).ToListAsync()));
         }
 
         [HttpGet("getAllOrdersDetail")]
         [Authorize(Roles = "ADMIN, EMPLOYEE")]
-        public IActionResult getAllDetail()
+        public async Task<IActionResult> getAllDetail()
         {
             List<OrderResponse> OrderResponse = new List<OrderResponse>();
-            var orders = myDbContext.Orders.ToList();
+            var orders =await myDbContext.Orders.ToListAsync();
             foreach (var order in orders)
             {
-                var orderItems = (from o in myDbContext.OrderItems
+                var orderItems =await (from o in myDbContext.OrderItems
                                   where o.orderId == order.id
                                   select new OrderItemResponse
                                   {
@@ -48,11 +49,11 @@ namespace BookshopAPI.Controllers
                                       createdAt = o.createdAt,
                                       updatedAt = o.updatedAt
 
-                                  }).ToList();
+                                  }).ToListAsync();
                 var orderResponse = new OrderResponse
                 {
                     id = order.id,
-                    user = myDbContext.Users.SingleOrDefault(x => x.id == order.userId),
+                    user =await myDbContext.Users.SingleOrDefaultAsync(x => x.id == order.userId),
                     status = order.status,
                     deliveryMethod = order.deliveryMethod,
                     deliveryPrice = order.deliveryPrice,
@@ -67,14 +68,14 @@ namespace BookshopAPI.Controllers
 
         [HttpGet("getAllOrdersDetailByUser")]
         [Authorize]
-        public IActionResult getAllDetailByUser()
+        public async Task<IActionResult> getAllDetailByUser()
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
             List<OrderResponse> OrderResponse = new List<OrderResponse>();
-            var orders = myDbContext.Orders.Where(x => x.userId == userId).ToList();
+            var orders =await myDbContext.Orders.Where(x => x.userId == userId).ToListAsync();
             foreach (var order in orders)
             {
-                var orderItems = (from o in myDbContext.OrderItems
+                var orderItems =await (from o in myDbContext.OrderItems
                                   where o.orderId == order.id
                                   select new OrderItemResponse
                                   {
@@ -87,11 +88,11 @@ namespace BookshopAPI.Controllers
                                       createdAt = o.createdAt,
                                       updatedAt = o.updatedAt
 
-                                  }).ToList();
+                                  }).ToListAsync();
                 var orderResponse = new OrderResponse
                 {
                     id = order.id,
-                    user = myDbContext.Users.SingleOrDefault(x => x.id == order.userId),
+                    user =await myDbContext.Users.SingleOrDefaultAsync(x => x.id == order.userId),
                     status = order.status,
                     deliveryMethod = order.deliveryMethod,
                     deliveryPrice = order.deliveryPrice,
@@ -105,10 +106,10 @@ namespace BookshopAPI.Controllers
         }
         [HttpGet("getOrderDetailById/orderId={orderId}")]
         [Authorize(Roles = "ADMIN, EMPLOYEE")]
-        public IActionResult getOrderDetailByIdl(long orderId)
+        public async Task<IActionResult> getOrderDetailByIdl(long orderId)
         {
            
-            var order = myDbContext.Orders.SingleOrDefault(x => x.id == orderId);
+            var order =await myDbContext.Orders.SingleOrDefaultAsync(x => x.id == orderId);
             var orderResponse=new OrderResponse();
 
 
@@ -118,7 +119,7 @@ namespace BookshopAPI.Controllers
             }
             else
             {
-                var orderItems = (from o in myDbContext.OrderItems
+                var orderItems =await (from o in myDbContext.OrderItems
                                   where o.orderId == order.id
                                   select new OrderItemResponse
                                   {
@@ -131,11 +132,11 @@ namespace BookshopAPI.Controllers
                                       createdAt = o.createdAt,
                                       updatedAt = o.updatedAt
 
-                                  }).ToList();
+                                  }).ToListAsync();
                  orderResponse = new OrderResponse
                 {
                     id = order.id,
-                    user = myDbContext.Users.SingleOrDefault(x => x.id == order.userId),
+                    user =await myDbContext.Users.SingleOrDefaultAsync(x => x.id == order.userId),
                     status = order.status,
                     deliveryMethod = order.deliveryMethod,
                     deliveryPrice = order.deliveryPrice,
@@ -152,13 +153,13 @@ namespace BookshopAPI.Controllers
 
         [HttpGet("getOrderDetailByStatus/status={status}")]
         [Authorize(Roles = "ADMIN, EMPLOYEE")]
-        public IActionResult getOrderDetailByStatus(int status)
+        public async Task<IActionResult> getOrderDetailByStatus(int status)
         {
             List<OrderResponse> OrderResponse = new List<OrderResponse>();
-            var orders = myDbContext.Orders.Where(x => x.status == status).ToList();
+            var orders =await myDbContext.Orders.Where(x => x.status == status).ToListAsync();
             foreach (var order in orders)
             {
-                var orderItems = (from o in myDbContext.OrderItems
+                var orderItems =await (from o in myDbContext.OrderItems
                                   where o.orderId == order.id
                                   select new OrderItemResponse
                                   {
@@ -171,11 +172,11 @@ namespace BookshopAPI.Controllers
                                       createdAt = o.createdAt,
                                       updatedAt = o.updatedAt
 
-                                  }).ToList();
+                                  }).ToListAsync();
                 var orderResponse = new OrderResponse
                 {
                     id = order.id,
-                    user = myDbContext.Users.SingleOrDefault(x => x.id == order.userId),
+                    user =await myDbContext.Users.SingleOrDefaultAsync(x => x.id == order.userId),
                     status = order.status,
                     deliveryMethod = order.deliveryMethod,
                     deliveryPrice = order.deliveryPrice,
@@ -190,7 +191,7 @@ namespace BookshopAPI.Controllers
 
         [HttpPost("createOrder")]
         [Authorize]
-        public IActionResult createOrder(OrderRequest orderRequest)
+        public async Task<IActionResult> createOrder(OrderRequest orderRequest)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
             var order = new Order
@@ -204,18 +205,18 @@ namespace BookshopAPI.Controllers
 
             };
             myDbContext.Orders.Add(order);
-            int rs = myDbContext.SaveChanges();
+            int rs =await myDbContext.SaveChangesAsync();
             if (rs <= 0)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, responeMessage.response500);
+                return Ok( responeMessage.response500);
             }
             List<long> cartItemId = orderRequest.cartItemIds;
             foreach(var id  in cartItemId)
             {
-                var cartItem = myDbContext.CartItems.SingleOrDefault(x => x.id == id);
+                var cartItem =await myDbContext.CartItems.SingleOrDefaultAsync(x => x.id == id);
                 if (cartItem != null)
                 {
-                    var product = myDbContext.Products.SingleOrDefault(y => y.id == cartItem.productId);
+                    var product =await myDbContext.Products.SingleOrDefaultAsync(y => y.id == cartItem.productId);
                     if (product != null)
                     {
                         var orderItem = new OrderItem
@@ -228,8 +229,8 @@ namespace BookshopAPI.Controllers
                             createdAt = DateTime.Now
 
                         };
-                        myDbContext.OrderItems.Add(orderItem);
-                        myDbContext.SaveChanges();
+                        await myDbContext.OrderItems.AddAsync(orderItem);
+                        await myDbContext.SaveChangesAsync();
                     }
                 }
             }
@@ -240,9 +241,9 @@ namespace BookshopAPI.Controllers
 
         [HttpPut("updateStatus/orderId={orderId}&status={status}")]
         [Authorize(Roles = "ADMIN, EMPLOYEE")]
-        public IActionResult updateStatus(long orderId, int status)
+        public async Task<IActionResult> updateStatus(long orderId, int status)
         {
-            var order = myDbContext.Orders.SingleOrDefault(x => x.id == orderId);
+            var order = await myDbContext.Orders.SingleOrDefaultAsync(x => x.id == orderId);
             if(order != null)
             {
                 if(order.status == 3)
@@ -258,7 +259,7 @@ namespace BookshopAPI.Controllers
 
                 }
                 order.status = status;
-                int rs =myDbContext.SaveChanges();
+                int rs =await myDbContext.SaveChangesAsync();
                 if(rs > 0)
                 {
                     return Ok(responeMessage.response200(null, "Cập nhật trạng thái đơn hàng thành công"));
