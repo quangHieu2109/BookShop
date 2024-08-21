@@ -17,7 +17,6 @@ using Google.Apis.Auth;
 using Newtonsoft.Json.Linq;
 using System.Management;
 using static System.Net.WebRequestMethods;
-using BookshopAPI.Database;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -344,7 +343,7 @@ namespace BookshopAPI.Controllers
                     
 
                 }),
-                Expires = DateTime.UtcNow.AddSeconds(30),
+                Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes), SecurityAlgorithms.HmacSha256Signature)
 
             };

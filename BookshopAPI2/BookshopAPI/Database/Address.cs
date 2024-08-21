@@ -5,15 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookshopAPI.Models
 {
-    public class AddressVM
-    {
-        public string? houseNumber { get; set; }
-        public string? province { get; set; }
-        public string? district { get; set; }
-        public string? ward { get; set; }
-    }
+
     [Table("address")]
-    public class Address:AddressVM
+    public class Address:AddressRequest
     {
         [Key]
         public long id { get; set; }

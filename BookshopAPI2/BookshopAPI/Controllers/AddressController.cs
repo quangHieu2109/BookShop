@@ -28,7 +28,7 @@ namespace BookshopAPI.Controllers
         }
         [HttpPost("addAddress")]
         [Authorize]
-        public async Task<IActionResult> addAddress(AddressVM addressVM)
+        public async Task<IActionResult> addAddress(AddressRequest addressVM)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
             var address =await myDbContext.Addresses.SingleOrDefaultAsync(x => x.userId == userId && x.houseNumber == addressVM.houseNumber
