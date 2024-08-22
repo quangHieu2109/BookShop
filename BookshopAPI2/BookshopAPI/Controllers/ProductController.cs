@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Bcpg.OpenPgp;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Xml;
 
@@ -59,7 +60,7 @@ namespace BookshopAPI.Controllers
 
         }
         [HttpGet("getProductByName")]
-        public async Task<IActionResult> getByName(string name)
+        public async Task<IActionResult> getByName([Required]string name)
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
@@ -84,7 +85,7 @@ namespace BookshopAPI.Controllers
 
         }
         [HttpGet("getSimilarProduct")]
-        public async Task<IActionResult> getSimilarProduct(long productId)
+        public async Task<IActionResult> getSimilarProduct([Required] long productId)
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
@@ -184,7 +185,7 @@ namespace BookshopAPI.Controllers
 
         [HttpPut("updateProduct")]
         [Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> update(Product product)
+        public async Task<IActionResult> update([Required] Product product)
         {
             var _product =await myDbContext.Products.SingleOrDefaultAsync(x => (x.id) == product.id);
             if (_product != null)
