@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "G:\\Code\\C#\\BookShop\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj": {}
+    "D:\\Program\\.NET\\BookShop\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj": {}
   },
   "projects": {
-    "G:\\Code\\C#\\BookShop\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj": {
+    "D:\\Program\\.NET\\BookShop\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "G:\\Code\\C#\\BookShop\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj",
+        "projectUniqueName": "D:\\Program\\.NET\\BookShop\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj",
         "projectName": "BookshopAPI",
-        "projectPath": "G:\\Code\\C#\\BookShop\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj",
-        "packagesPath": "C:\\Users\\GIGABYTE\\.nuget\\packages\\",
-        "outputPath": "G:\\Code\\C#\\BookShop\\BookshopAPI2\\BookshopAPI\\obj\\",
+        "projectPath": "D:\\Program\\.NET\\BookShop\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj",
+        "packagesPath": "C:\\Users\\dmx\\.nuget\\packages\\",
+        "outputPath": "D:\\Program\\.NET\\BookShop\\BookshopAPI2\\BookshopAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\GIGABYTE\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\dmx\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -57,25 +59,25 @@
             },
             "Microsoft.AspNetCore.Authentication.Google": {
               "target": "Package",
-              "version": "[8.0.6, )"
+              "version": "[8.0.8, )"
             },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
-              "version": "[8.0.6, )"
+              "version": "[8.0.8, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[8.0.6, )"
+              "version": "[8.0.8, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.6, )"
+              "version": "[8.0.8, )"
             },
             "MySql.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[8.0.2, )"
+              "version": "[8.0.5, )"
             },
             "Pomelo.EntityFrameworkCore.MySql": {
               "target": "Package",
@@ -83,7 +85,7 @@
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[6.4.0, )"
+              "version": "[6.7.1, )"
             }
           },
           "imports": [
@@ -105,7 +107,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.205/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

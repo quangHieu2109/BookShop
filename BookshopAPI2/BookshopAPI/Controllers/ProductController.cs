@@ -1,14 +1,11 @@
 ﻿using BookshopAPI.Models;
 using BookshopAPI.Service;
-using Google.Protobuf.Collections;
+
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
-using System.Xml;
 
 namespace BookshopAPI.Controllers
 {
@@ -60,7 +57,7 @@ namespace BookshopAPI.Controllers
 
         }
         [HttpGet("getProductByName")]
-        public async Task<IActionResult> getByName([Required] string name)
+  
         public async Task<IActionResult> getByName([Required]string name)
         {
             long userId = -1;
