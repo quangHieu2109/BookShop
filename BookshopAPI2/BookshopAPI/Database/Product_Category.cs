@@ -8,8 +8,10 @@ namespace BookshopAPI.Models
     public class Product_Category
     {
         [Key]
+        [ForeignKey("productId")]
         public long productId { get; set; }
-       
+        [Required]
+        [ForeignKey("categoryId")]
         public long categoryId { get; set; }
 
     }

@@ -9,6 +9,7 @@ namespace BookshopAPI.Models
     {
         [Key]
         public long id {  get; set; }
+        [ForeignKey("userId")]
         public long userId {  get; set; }
         public int status { get; set; }
         public int deliveryMethod {  get; set; }

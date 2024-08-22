@@ -7,6 +7,7 @@ namespace BookshopAPI.Models
     public class RefreshToken
     {
         [Key]
+        [ForeignKey("UserId")]
         public long userId { get; set; }
         public string refreshToken { get; set; }
         public DateTime endAt { get; set; }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BookshopAPI.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookshopAPI.Models
 {

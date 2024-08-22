@@ -7,8 +7,12 @@ namespace BookshopAPI.Models
     public class ProductReview
     {
         [Key]
-        public long id {  get; set; }
+        public long id { get; set; }
+        [ForeignKey("productId")]
+        [Required]
         public long productId { get; set; }
+        [ForeignKey("userId")]
+        [Required]
         public long userId {  get; set; }
         public int ratingScore {  get; set; }
         public string content { get; set; }

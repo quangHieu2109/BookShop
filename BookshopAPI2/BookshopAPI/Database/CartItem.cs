@@ -8,8 +8,10 @@ namespace BookshopAPI.Models
     public class CartItem
     {
         [Key]
-        public long id {  get; set; }  
+        public long id {  get; set; }
+        [ForeignKey("cartId")]
         public long cartId { get; set; }
+        [ForeignKey("productId")]
         public long productId {  get; set; }
         public int quantity {  get; set; }
         public DateTime? createdAt { get; set; }

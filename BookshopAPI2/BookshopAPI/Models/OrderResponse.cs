@@ -1,4 +1,6 @@
-﻿namespace BookshopAPI.Models
+﻿using BookshopAPI.Database;
+
+namespace BookshopAPI.Models
 {
     public class OrderResponse
 

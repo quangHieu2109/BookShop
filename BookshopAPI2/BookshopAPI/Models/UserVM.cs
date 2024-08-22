@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BookshopAPI.Database;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookshopAPI.Models
@@ -6,34 +7,22 @@ namespace BookshopAPI.Models
     public class UserLogin
 
     {
-        public string? username {  get; set; } 
+        [Required]
+        public string? username { get; set; }
+        [Required]
         public string? password { get; set; }
         
 
     }
     public class UserRegister : UserLogin
     {
+        [EmailAddress ]
         public string? email { get; set; }
+        [MaxLength(255)]
         public string? fullName { get; set; }
     }
-    [Table("user")]
-    public class User : UserRegister
-    {
-        [Key]
-        public long id { get; set; }
-        public string? phoneNumber { get; set; }
-        public int? gender {  get; set; }
-        public string? role {  get; set; }
-        public DateTime? createAt { get; set; }
-
-    }
-    [Table("google_user")]
-    public class GoogleUser
-    {
-        [Key]
-        public long googleId { get; set; }
-        public string email { get; set; }
-    }
+    
+    
     public class GoogleUserVM: GoogleUser
     {
         public string fullName { get; set; }
@@ -41,8 +30,11 @@ namespace BookshopAPI.Models
     public class UserInfor
     {
         public string fullName { get; set; }
+        [RegularExpression(@"^\d{10}$|^\+\d{2} \d{9}")]
         public string phoneNumber { get; set; }
+        [EmailAddress]
         public string email { get; set; }
+        [Range(0,1)]
         public int? gender { get; set;}
 
     }
