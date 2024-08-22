@@ -19,6 +19,7 @@ using System.Management;
 using static System.Net.WebRequestMethods;
 using Microsoft.EntityFrameworkCore;
 using BookshopAPI.Database;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace BookshopAPI.Controllers
@@ -54,10 +55,24 @@ namespace BookshopAPI.Controllers
         public async Task<IActionResult> changePassword(string password)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
+            if(password.IndexOf(" ") != -1)
+            {
+                return Ok(responeMessage.response400(null, "Mật khẩu không hợp lệ"));
+            }
+            else { 
             var user = await myDbContext.Users.SingleOrDefaultAsync(x => x.id == userId);
-            user.password = Hash(password);
-            await myDbContext.SaveChangesAsync();;
-            return Ok(responeMessage.response200);
+                if(user.password == Hash(password)) {
+                    return Ok(responeMessage.response400(null, "Mật khẩu mới trùng với mâtj khẩu cũ"));
+
+                }
+                else
+                {
+                    user.password = Hash(password);
+                    await myDbContext.SaveChangesAsync(); ;
+                    return Ok(responeMessage.response200);
+                }
+           
+            }
         }
         [HttpPost("changePasswordByAdmin")]
         [Authorize(Roles = "ADMIN")]
@@ -73,7 +88,8 @@ namespace BookshopAPI.Controllers
                 await myDbContext.SaveChangesAsync();;
                 return Ok(responeMessage.response200(null, "Đổi mật khẩu thành công"));
             }
-            return Ok(responeMessage.response400);
+            
+            return Ok(responeMessage.response400(null, "Username không chính xác"));
            
            
         }
@@ -88,8 +104,19 @@ namespace BookshopAPI.Controllers
             user.phoneNumber = userInfor.phoneNumber;
             user.email = userInfor.email;
             user.gender = userInfor.gender;
-            await myDbContext.SaveChangesAsync();
-            return Ok(responeMessage.response200(user));
+            var validationContext = new ValidationContext(user);
+            var validationResults = new List<ValidationResult>();
+            Validator.TryValidateObject(user, validationContext, validationResults);
+            if(validationResults.Count == 0) 
+            {
+                await myDbContext.SaveChangesAsync();
+                return Ok(responeMessage.response200(user));
+            }
+            else
+            {
+                return Ok(responeMessage.response400(null, convertValidationResult(validationResults)));
+            }
+           
         }
         [HttpPost("login")]
         public async Task<IActionResult> login(UserLogin userLogin) {
@@ -220,7 +247,7 @@ namespace BookshopAPI.Controllers
                 return BadRequest(responeMessage.response400("Username đã tồn tại!"));
             }else
             {
-                user = myDbContext.Users.SingleOrDefault(x => x.email == userRegister.email);
+                user = await myDbContext.Users.SingleOrDefaultAsync(x => x.email == userRegister.email);
                 if (user != null)
                 {
                     return Ok(responeMessage.response400("Email đã tồn tại!"));
@@ -234,26 +261,38 @@ namespace BookshopAPI.Controllers
                         fullName = userRegister.fullName, 
                         email = userRegister.email, 
                         role = "CUSTOMER" };
-                   await myDbContext.Users.AddAsync(user);
-                    var rs =  await myDbContext.SaveChangesAsync();;
-                    if (rs > 0)
-                    {
-                        var cart = new Cart
-                        {
-                            id = DateTime.Now.ToFileTimeUtc(),
-                            userId = user.id,
-                            createdAt = DateTime.Now
 
-                        };
-                        await myDbContext.Carts.AddAsync(cart);
-                        await myDbContext.SaveChangesAsync();;
-                        
-                        return Ok(responeMessage.response200(user, "Đăng ký thành công"));
+                    var validationContext = new ValidationContext(user);
+                    var validationResults = new List<ValidationResult>();
+                    Validator.TryValidateObject(user, validationContext, validationResults);
+                    if (validationResults.Count == 0)
+                    {
+                        await myDbContext.Users.AddAsync(user);
+                        var rs = await myDbContext.SaveChangesAsync(); ;
+                        if (rs > 0)
+                        {
+                            var cart = new Cart
+                            {
+                                id = DateTime.Now.ToFileTimeUtc(),
+                                userId = user.id,
+                                createdAt = DateTime.Now
+
+                            };
+                            await myDbContext.Carts.AddAsync(cart);
+                            await myDbContext.SaveChangesAsync(); ;
+
+                            return Ok(responeMessage.response200(user, "Đăng ký thành công"));
+                        }
+                        else
+                        {
+                            return Ok(responeMessage.response500);
+                        }
                     }
                     else
                     {
-                        return Ok(responeMessage.response500);
+                        return Ok(responeMessage.response400(null, convertValidationResult(validationResults)));
                     }
+                    
                 }
             }
             
@@ -394,6 +433,16 @@ namespace BookshopAPI.Controllers
             }
             return hashed;
         }
+        public static string convertValidationResult(List<ValidationResult> validationResults)
+        {
+            string result = "";
+
+            foreach(var  validationResult in validationResults)
+            {
+                result+= validationResult.ToString()+"\n";
+            }
+            return result;
+        }  
         
     }
 }

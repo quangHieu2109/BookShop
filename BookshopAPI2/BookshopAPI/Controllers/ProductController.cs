@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Bcpg.OpenPgp;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Xml;
 
@@ -59,7 +60,7 @@ namespace BookshopAPI.Controllers
 
         }
         [HttpGet("getProductByName")]
-        public async Task<IActionResult> getByName(string name)
+        public async Task<IActionResult> getByName([Required] string name)
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
@@ -84,7 +85,7 @@ namespace BookshopAPI.Controllers
 
         }
         [HttpGet("getSimilarProduct")]
-        public async Task<IActionResult> getSimilarProduct(long productId)
+        public async Task<IActionResult> getSimilarProduct([Required] long productId)
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
@@ -114,7 +115,7 @@ namespace BookshopAPI.Controllers
 
 
         [HttpGet("getProduct/categoryId={categoryId}")]
-        public async Task<IActionResult> getProductByCategoryId(long categoryId)
+        public async Task<IActionResult> getProductByCategoryId([Required] long categoryId)
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
@@ -167,7 +168,7 @@ namespace BookshopAPI.Controllers
         }
         [HttpDelete("deleteProduct/productId={productId}")]
         [Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> deleteProduct(long productId)
+        public async Task<IActionResult> deleteProduct([Required] long productId)
         {
             var product = await myDbContext.Products.FirstOrDefaultAsync(x => x.id ==  productId);
             if(product != null)
@@ -210,7 +211,7 @@ namespace BookshopAPI.Controllers
 
         [HttpPost("addWishList/productId={productId}")]
         [Authorize]
-        public async Task<IActionResult> AddWishList(long productId)
+        public async Task<IActionResult> AddWishList([Required] long productId)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
             var wishlist =await myDbContext.WishListItems.SingleOrDefaultAsync(x => x.productId == productId && x.userId == userId);
@@ -246,7 +247,7 @@ namespace BookshopAPI.Controllers
 
         [HttpDelete("deleteWishList/productId={productId}")]
         [Authorize]
-        public async Task<IActionResult> DeleteWishList(long productId)
+        public async Task<IActionResult> DeleteWishList([Required] long productId)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
             
@@ -290,7 +291,7 @@ namespace BookshopAPI.Controllers
             return Ok(responeMessage.response200(productRatings));
         }
         [HttpGet("getRecommendByOrderRating/productId={productId}")]
-        public async Task<IActionResult> getRecommendByOrderRating(long productId)
+        public async Task<IActionResult> getRecommendByOrderRating([Required] long productId)
         {
             var category_product =await myDbContext.Product_Categories.SingleOrDefaultAsync(x => x.productId == productId);
             var productRatings =await myDbContext.ProductReviews
@@ -364,7 +365,7 @@ namespace BookshopAPI.Controllers
             return Ok(responeMessage.response200(result));
         }
         [HttpGet("getById/productId={productId}")]
-        public async Task<IActionResult> getById(long productId)
+        public async Task<IActionResult> getById([Required] long productId)
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
