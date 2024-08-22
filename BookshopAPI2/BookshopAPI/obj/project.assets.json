@@ -4974,26 +4974,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\dmx\\.nuget\\packages\\": {}
+    "C:\\Users\\GIGABYTE\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Program\\.NET\\BookShop\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj",
+      "projectUniqueName": "G:\\Code\\C#\\BookShop\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj",
       "projectName": "BookshopAPI",
-      "projectPath": "D:\\Program\\.NET\\BookShop\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj",
-      "packagesPath": "C:\\Users\\dmx\\.nuget\\packages\\",
-      "outputPath": "D:\\Program\\.NET\\BookShop\\BookshopAPI2\\BookshopAPI\\obj\\",
+      "projectPath": "G:\\Code\\C#\\BookShop\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj",
+      "packagesPath": "C:\\Users\\GIGABYTE\\.nuget\\packages\\",
+      "outputPath": "G:\\Code\\C#\\BookShop\\BookshopAPI2\\BookshopAPI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\dmx\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\GIGABYTE\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -5079,7 +5077,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.205/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

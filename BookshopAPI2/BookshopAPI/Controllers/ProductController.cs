@@ -61,6 +61,7 @@ namespace BookshopAPI.Controllers
         }
         [HttpGet("getProductByName")]
         public async Task<IActionResult> getByName([Required] string name)
+        public async Task<IActionResult> getByName([Required]string name)
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
@@ -185,7 +186,7 @@ namespace BookshopAPI.Controllers
 
         [HttpPut("updateProduct")]
         [Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> update(Product product)
+        public async Task<IActionResult> update([Required] Product product)
         {
             var _product =await myDbContext.Products.SingleOrDefaultAsync(x => (x.id) == product.id);
             if (_product != null)
