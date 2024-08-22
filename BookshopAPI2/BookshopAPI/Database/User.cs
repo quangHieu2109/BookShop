@@ -1,7 +1,7 @@
 ﻿using BookshopAPI.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using Mysqlx;
+
 
 namespace BookshopAPI.Database
 {
