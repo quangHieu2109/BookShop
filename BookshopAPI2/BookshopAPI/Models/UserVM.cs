@@ -7,18 +7,18 @@ namespace BookshopAPI.Models
     public class UserLogin
 
     {
-        [Required]
+        
         public string? username { get; set; }
-        [Required]
+        
         public string? password { get; set; }
         
 
     }
     public class UserRegister : UserLogin
     {
-        [EmailAddress ]
+       
         public string? email { get; set; }
-        [MaxLength(255)]
+    
         public string? fullName { get; set; }
     }
     
@@ -30,11 +30,11 @@ namespace BookshopAPI.Models
     public class UserInfor
     {
         public string fullName { get; set; }
-        [RegularExpression(@"^\d{10}$|^\+\d{2} \d{9}")]
+        
         public string phoneNumber { get; set; }
-        [EmailAddress]
+        
         public string email { get; set; }
-        [Range(0,1)]
+       
         public int? gender { get; set;}
 
     }

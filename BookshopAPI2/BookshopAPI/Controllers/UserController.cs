@@ -99,14 +99,14 @@ namespace BookshopAPI.Controllers
         public async Task<IActionResult> ChangeInfor(UserInfor userInfor)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var user = await myDbContext.Users.SingleOrDefaultAsync(x => x.id == userId);
+            User user = await myDbContext.Users.SingleOrDefaultAsync(x => x.id == userId);
             user.fullName = userInfor.fullName;
             user.phoneNumber = userInfor.phoneNumber;
             user.email = userInfor.email;
             user.gender = userInfor.gender;
             var validationContext = new ValidationContext(user);
             var validationResults = new List<ValidationResult>();
-            Validator.TryValidateObject(user, validationContext, validationResults);
+            Validator.TryValidateObject(user, validationContext, validationResults, true);
             if(validationResults.Count == 0) 
             {
                 await myDbContext.SaveChangesAsync();
@@ -140,7 +140,7 @@ namespace BookshopAPI.Controllers
         }
 
         [HttpPost("sendOTP/email={email}")]
-        public async Task<IActionResult> Otp(string email)
+        public async Task<IActionResult> sendOTP(string email)
         {
             if (await myDbContext.Users.SingleOrDefaultAsync(x => x.email == email) != null)
             {
@@ -156,7 +156,7 @@ namespace BookshopAPI.Controllers
                 if(sendOtp != null)
                 {
                     myDbContext.OPTs.Remove(sendOtp);
-                    await myDbContext.SaveChangesAsync();;
+                    await myDbContext.SaveChangesAsync();
                 }
                 sendOtp = new OTP
                 {
@@ -264,7 +264,7 @@ namespace BookshopAPI.Controllers
 
                     var validationContext = new ValidationContext(user);
                     var validationResults = new List<ValidationResult>();
-                    Validator.TryValidateObject(user, validationContext, validationResults);
+                    Validator.TryValidateObject(user, validationContext, validationResults, true);
                     if (validationResults.Count == 0)
                     {
                         await myDbContext.Users.AddAsync(user);
@@ -373,14 +373,7 @@ namespace BookshopAPI.Controllers
                     new Claim(JwtRegisteredClaimNames.Sub, user.email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(ClaimTypes.Role, user.role),
-
-
-                     new Claim("Id", user.id+"")
-                    
-                    // role
-
-                    //token
-                    
+                    new Claim("Id", user.id+"")
 
                 }),
                 Expires = DateTime.UtcNow.AddHours(2),
@@ -403,7 +396,7 @@ namespace BookshopAPI.Controllers
                 await myDbContext.SaveChangesAsync();;
             }
             refreshTK.endAt = DateTime.UtcNow.AddDays(30);
-            refreshTK.refreshToken = Guid.NewGuid().ToString();
+            //refreshTK.refreshToken = Guid.NewGuid().ToString();
             await myDbContext.SaveChangesAsync();;
             return new LoginResponse
             {
