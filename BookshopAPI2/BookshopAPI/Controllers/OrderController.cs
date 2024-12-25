@@ -21,7 +21,7 @@ namespace BookshopAPI.Controllers
             return Ok(responeMessage.response200(await myDbContext.Orders.ToListAsync()));
         }
 
-        [HttpGet("getOrderByStatus/status={status}")]
+        [HttpGet("getOrderByStatus/status:{status}")]
         [Authorize(Roles = "ADMIN, EMPLOYEE")]
         public async Task<IActionResult> getOrderByStatus(int status)
         {
@@ -104,7 +104,7 @@ namespace BookshopAPI.Controllers
             }
             return Ok(responeMessage.response200(OrderResponse));
         }
-        [HttpGet("getOrderDetailById/orderId={orderId}")]
+        [HttpGet("getOrderDetailById/orderId:{orderId}")]
         [Authorize(Roles = "ADMIN, EMPLOYEE")]
         public async Task<IActionResult> getOrderDetailByIdl(long orderId)
         {
@@ -151,7 +151,7 @@ namespace BookshopAPI.Controllers
         }
 
 
-        [HttpGet("getOrderDetailByStatus/status={status}")]
+        [HttpGet("getOrderDetailByStatus/status:{status}")]
         [Authorize(Roles = "ADMIN, EMPLOYEE")]
         public async Task<IActionResult> getOrderDetailByStatus(int status)
         {
@@ -239,7 +239,7 @@ namespace BookshopAPI.Controllers
 
         }
 
-        [HttpPut("updateStatus/orderId={orderId}&status={status}")]
+        [HttpPut("updateStatus/orderId:{orderId}&status:{status}")]
         [Authorize(Roles = "ADMIN, EMPLOYEE")]
         public async Task<IActionResult> updateStatus(long orderId, int status)
         {

@@ -112,7 +112,7 @@ namespace BookshopAPI.Controllers
         }
 
 
-        [HttpGet("getProduct/categoryId={categoryId}")]
+        [HttpGet("getProduct/categoryId:{categoryId}")]
         public async Task<IActionResult> getProductByCategoryId([Required] long categoryId)
         {
             long userId = -1;
@@ -136,7 +136,7 @@ namespace BookshopAPI.Controllers
 
             return Ok(responeMessage.response404);
         }
-        [HttpGet("getProduct/categoryName={categoryName}")]
+        [HttpGet("getProduct/categoryName:{categoryName}")]
         public async Task<IActionResult> getProductByCategoryName(String categoryName)
         {
             long userId = -1;
@@ -164,7 +164,7 @@ namespace BookshopAPI.Controllers
 
             return Ok(responeMessage.response404);
         }
-        [HttpDelete("deleteProduct/productId={productId}")]
+        [HttpDelete("deleteProduct/productId:{productId}")]
         [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> deleteProduct([Required] long productId)
         {
@@ -207,7 +207,7 @@ namespace BookshopAPI.Controllers
 
         }
 
-        [HttpPost("addWishList/productId={productId}")]
+        [HttpPost("addWishList/productId:{productId}")]
         [Authorize]
         public async Task<IActionResult> AddWishList([Required] long productId)
         {
@@ -243,7 +243,7 @@ namespace BookshopAPI.Controllers
 
         }
 
-        [HttpDelete("deleteWishList/productId={productId}")]
+        [HttpDelete("deleteWishList/productId:{productId}")]
         [Authorize]
         public async Task<IActionResult> DeleteWishList([Required] long productId)
         {
@@ -288,7 +288,7 @@ namespace BookshopAPI.Controllers
                      .ToListAsync();
             return Ok(responeMessage.response200(productRatings));
         }
-        [HttpGet("getRecommendByOrderRating/productId={productId}")]
+        [HttpGet("getRecommendByOrderRating/productId:{productId}")]
         public async Task<IActionResult> getRecommendByOrderRating([Required] long productId)
         {
             var category_product =await myDbContext.Product_Categories.SingleOrDefaultAsync(x => x.productId == productId);
@@ -362,7 +362,7 @@ namespace BookshopAPI.Controllers
             }
             return Ok(responeMessage.response200(result));
         }
-        [HttpGet("getById/productId={productId}")]
+        [HttpGet("getById/productId:{productId}")]
         public async Task<IActionResult> getById([Required] long productId)
         {
             long userId = -1;

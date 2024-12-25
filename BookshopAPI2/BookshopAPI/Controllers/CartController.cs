@@ -56,7 +56,7 @@ namespace BookshopAPI.Controllers
             };
             return Ok(responeMessage.response200(cartResponse)) ;
         }
-        [HttpPost("addCartItemPId={productId}")]
+        [HttpPost("addCartItemPId:{productId}")]
         [Authorize]
         public async Task<IActionResult> addCartItemByPId(long productId, int quantity=1)
         {
@@ -87,7 +87,7 @@ namespace BookshopAPI.Controllers
             }
             return Ok(responeMessage.response400);
         }
-        [HttpPost("addCartItemPName={productName}")]
+        [HttpPost("addCartItemPName:{productName}")]
         [Authorize]
         public async Task<IActionResult> addCartItemByPName(String productName, int quantity = 1)
         {
@@ -119,7 +119,7 @@ namespace BookshopAPI.Controllers
             return Ok(responeMessage.response400);
         }
 
-        [HttpPut("updateCartItemId={cartItemId}")]
+        [HttpPut("updateCartItemId:{cartItemId}")]
         [Authorize]
         public async Task<IActionResult> updateCartItem(long cartItemId, int quantity = 1)
         {
@@ -139,7 +139,7 @@ namespace BookshopAPI.Controllers
             return Ok(responeMessage.response400);
         }
 
-        [HttpDelete("deleteCartItemId={id}")]
+        [HttpDelete("deleteCartItemId:{id}")]
         [Authorize]
         public async Task<IActionResult> deleteCartItem(long id)
         {

@@ -139,7 +139,7 @@ namespace BookshopAPI.Controllers
             }
         }
 
-        [HttpPost("sendOTP/email={email}")]
+        [HttpPost("sendOTP/email:{email}")]
         public async Task<IActionResult> sendOTP(string email)
         {
             if (await myDbContext.Users.SingleOrDefaultAsync(x => x.email == email) != null)
@@ -297,7 +297,7 @@ namespace BookshopAPI.Controllers
             }
             
         }
-        [HttpPost("loginGoogleUser/token={token}")]
+        [HttpPost("loginGoogleUser/token:{token}")]
         public async Task<IActionResult> loginGoogle(string token)
         {
             var handler = new JwtSecurityTokenHandler();
