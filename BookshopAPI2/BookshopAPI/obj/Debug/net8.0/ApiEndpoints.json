@@ -583,14 +583,14 @@
   {
     "ContainingType": "BookshopAPI.Controllers.UserController",
     "Method": "loginGoogle",
-    "RelativePath": "User/loginGoogleUser/token:{token}",
+    "RelativePath": "User/loginGoogleUser",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "token",
-        "Type": "System.String",
+        "Type": "BookshopAPI.Models.Token",
         "IsRequired": true
       }
     ],
