@@ -297,42 +297,49 @@ namespace BookshopAPI.Controllers
             }
             
         }
-        [HttpPost("loginGoogleUser/token:{token}")]
-        public async Task<IActionResult> loginGoogle(string token)
+        [HttpPost("loginGoogleUser")]
+        public async Task<IActionResult> loginGoogle(Token token)
         {
             var handler = new JwtSecurityTokenHandler();
-            var jwtSecurityToken = handler.ReadJwtToken(token);
-
-            var claim = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "email");
-            
-            if (claim != null)
+            try
             {
-                var email = claim?.Value;
-                var fullName = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
-                var user = myDbContext.Users.SingleOrDefault(x => x.email == email);
-                if(user == null)
+                var jwtSecurityToken = handler.ReadJwtToken(token.googleToken);
+
+                var claim = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "email");
+
+                if (claim != null)
                 {
-                    user = new User
+                    var email = claim?.Value;
+                    var fullName = jwtSecurityToken.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+                    var user = myDbContext.Users.SingleOrDefault(x => x.email == email);
+                    if (user == null)
                     {
-                        email = email,
-                        fullName = fullName,
-                        role = "CUSTOMER",
-                        createAt = DateTime.Now,
-                        gender = 1
-                    };
-                    await myDbContext.Users.AddAsync(user);
-                    await myDbContext.SaveChangesAsync();
+                        user = new User
+                        {
+                            email = email,
+                            fullName = fullName,
+                            role = "CUSTOMER",
+                            createAt = DateTime.Now,
+                            gender = 1
+                        };
+                        await myDbContext.Users.AddAsync(user);
+                        await myDbContext.SaveChangesAsync();
+
+                    }
+
+                    user = myDbContext.Users.SingleOrDefault(x => x.email == email);
+                    var accessToken = await generateToken(user);
+                    return Ok(responeMessage.response200(accessToken, "Đăng nhập thành công"));
 
                 }
-
-
-                var accessToken = generateToken(user);
-                return Ok(responeMessage.response200(accessToken, "Đăng nhập thành công"));
-                
+                else
+                {
+                    return Ok(responeMessage.response400("Token không chính xác!"));
+                }
             }
-            else
-            {
-                return Ok(responeMessage.response400("Token không chính xác!"));
+            catch (Exception ex) { 
+                    return Ok(responeMessage.response400("Token không hợp lệ!"));
+
             }
 
         }
