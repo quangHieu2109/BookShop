@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project>
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAJrPP0b5+SkGIZ4R6bOncwAAAAAACAAAAAAAQZgAAAAEAACAAAADrBSU4CNUzLUiDnyA22FJJYE2Dw+gshoX1Sr03pADXhgAAAAAOgAAAAAIAACAAAABT6pY87Wy6g46j6yoyxNY2OwyzaxU9Za6l2/P/QDNVuiAAAADisl4n1id+J0YitLvEB1uhmugd5dBPk4Uk+ufoK8veWkAAAABtxfuC9+Fnj4xMDLWTUTStQzJm2UU2pGtzKc+wQNOTXeor+uErcJwV1w60EzDtlpYDDFR7rbilsFh0vmTPkOrS</EncryptedPassword>
+    <History>True|2024-12-26T02:37:26.6667872Z||;True|2024-12-26T09:34:03.3205414+07:00||;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="MySqlConnection">
+      <Value>Server=db11902.databaseasp.net%3b Database=db11902%3b Uid=db11902%3b Pwd=4Xg%3fc8!R+N6f%3b</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
+</Project>
