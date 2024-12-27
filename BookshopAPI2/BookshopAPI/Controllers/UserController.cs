@@ -405,26 +405,40 @@ namespace BookshopAPI.Controllers
         [HttpPost("loginFacebookUser")]
         public async Task<IActionResult> loginFacebook(FacebookUserLogin facebookUserLogin)
         {
-            string url = $"https://graph.facebook.com/debug_token?input_token={facebookUserLogin.inputToken}&access_token={facebookUserLogin.accessToken}";
-            using (HttpClient client = new HttpClient())
+
+            try
             {
-                try
+
+                string uid = facebookUserLogin.uid;
+                var email = await myDbContext.Emails.SingleOrDefaultAsync(x => x.uid == uid);
+                if (email != null)
                 {
-                    HttpResponseMessage response = await client.GetAsync(url);
-                    response.EnsureSuccessStatusCode();
-
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    // Phân tích JSON
-                    JsonResponse responseJson = JsonConvert.DeserializeObject<JsonResponse>(responseBody);
-
-                    // Lấy user_id
-                    string uid = responseJson.data.user_id;
-                    var email = await myDbContext.Emails.SingleOrDefaultAsync(x => x.uid == uid);
-                    if (email != null)
+                    if (email.email.Equals(facebookUserLogin.email))
                     {
                         var user = await myDbContext.Users.SingleOrDefaultAsync(x => x.id == email.userId);
                         var accessToken = await generateToken(user);
                         return Ok(responeMessage.response200(accessToken, "Đăng nhập thành công"));
+                    }
+                    else
+                    {
+                        return Ok(responeMessage.response400(null, "Email không chính xác "));
+                    }
+                }
+                else
+                {
+                    email = await myDbContext.Emails.SingleOrDefaultAsync(x => x.email == facebookUserLogin.email);
+                    if (email != null)
+                    {
+                        if (email.uid.Equals(facebookUserLogin.uid))
+                        {
+                            var user = await myDbContext.Users.SingleOrDefaultAsync(x => x.id == email.userId);
+                            var accessToken = await generateToken(user);
+                            return Ok(responeMessage.response200(accessToken, "Đăng nhập thành công"));
+                        }
+                        else
+                        {
+                            return Ok(responeMessage.response400(null, "Uid không chính xác "));
+                        }
                     }
                     else
                     {
@@ -470,18 +484,19 @@ namespace BookshopAPI.Controllers
                             return Ok(responeMessage.response500);
                         }
                     }
-
-
-
-
-
                 }
-                catch (HttpRequestException e)
-                {
-                    Console.WriteLine($"Error: {e.Message}");
-                    return StatusCode(500, "Có lỗi xảy ra trong quá trình xử lý yêu cầu.");
-                }
+
+
+
+
+
             }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine($"Error: {e.Message}");
+                return StatusCode(500, "Có lỗi xảy ra trong quá trình xử lý yêu cầu.");
+            }
+
 
         }
 
