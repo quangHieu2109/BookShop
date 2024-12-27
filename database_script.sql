@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `accuracyuser` (
   CONSTRAINT `accuracyuser_ibfk_1` FOREIGN KEY (`username`) REFERENCES `user` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table bookshopdb2.accuracyuser: ~0 rows (approximately)
+-- Dumping data for table bookshopdb2.accuracyuser: ~1 rows (approximately)
 INSERT INTO `accuracyuser` (`id`, `username`, `accuracyCode`, `endAt`) VALUES
 	(8, 'user11', '660833', '2024-05-31 06:40:04');
 
@@ -76,14 +76,14 @@ CREATE TABLE IF NOT EXISTS `cart` (
   CONSTRAINT `fk_cart_user` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=133797663067028384 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table bookshopdb2.cart: ~6 rows (approximately)
+-- Dumping data for table bookshopdb2.cart: ~5 rows (approximately)
 INSERT INTO `cart` (`id`, `userId`, `createdAt`, `updatedAt`) VALUES
 	(1, 4, '2021-12-30 08:39:19', NULL),
 	(2, 5, '2021-12-18 13:35:59', NULL),
 	(8, 1, '2024-04-04 15:40:17', NULL),
 	(14, 2, '2024-05-21 04:28:31', NULL),
 	(15, 3, '2024-05-21 06:10:19', NULL),
-	(133797663067028383, 133797663064144005, '2024-12-27 09:45:06', NULL);
+	(133797725909385356, 133797725905877308, '2024-12-27 11:29:50', NULL);
 
 -- Dumping structure for table bookshopdb2.cart_item
 CREATE TABLE IF NOT EXISTS `cart_item` (
@@ -178,9 +178,9 @@ CREATE TABLE IF NOT EXISTS `email` (
   CONSTRAINT `FK__user_email` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table bookshopdb2.email: ~2 rows (approximately)
+-- Dumping data for table bookshopdb2.email: ~1 rows (approximately)
 INSERT INTO `email` (`uid`, `userId`, `email`) VALUES
-	('1336967447464425', 133797663064144005, 'nthai0932169055@gmail.com'),
+	('hiu2109', 133797725905877308, 'hiu2109@gmail.com'),
 	('nuRH0tCoUFhCC8eLUnvVIESyWxC3', 133628511327861887, '21130343@st.hcmuaf.edu.vn');
 
 -- Dumping structure for table bookshopdb2.facebook_user
@@ -789,7 +789,7 @@ CREATE TABLE IF NOT EXISTS `otp` (
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table bookshopdb2.otp: ~0 rows (approximately)
+-- Dumping data for table bookshopdb2.otp: ~1 rows (approximately)
 INSERT INTO `otp` (`email`, `otp`, `accuracy`, `endAt`) VALUES
 	('21130356@st.hcmuaf.edu.vn', '103588', 0, '2024-06-25 05:20:47');
 
@@ -1331,12 +1331,12 @@ CREATE TABLE IF NOT EXISTS `refresh_token` (
   CONSTRAINT `FK__user` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=133797663064144006 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table bookshopdb2.refresh_token: ~4 rows (approximately)
+-- Dumping data for table bookshopdb2.refresh_token: ~3 rows (approximately)
 INSERT INTO `refresh_token` (`userId`, `refreshToken`, `endAt`) VALUES
 	(1, '2f0c2f0e-e9d1-49bd-9179-1b1ec4eb9b36', '2025-01-25 04:21:26'),
 	(1714833219717, '39ec323a-1a25-4a38-8a69-31da3d22dad6', '2024-09-17 03:10:32'),
 	(133628511327861887, '59135059-d4de-490e-8de5-03e895c23185', '2025-01-26 02:17:38'),
-	(133797663064144005, 'ca599249-2919-4838-be59-7435500bd086', '2025-01-26 02:46:48');
+	(133797725905877308, '259d5b72-39ac-4ed8-bc91-95ebdc741ea3', '2025-01-26 04:30:27');
 
 -- Dumping structure for table bookshopdb2.user
 CREATE TABLE IF NOT EXISTS `user` (
@@ -1354,7 +1354,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   UNIQUE KEY `uq_email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=133797663064144006 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table bookshopdb2.user: ~8 rows (approximately)
+-- Dumping data for table bookshopdb2.user: ~10 rows (approximately)
 INSERT INTO `user` (`id`, `username`, `password`, `fullname`, `email`, `phoneNumber`, `gender`, `role`, `createAt`) VALUES
 	(1, 'user1', '202CB962AC59075B964B07152D234B70', 'Dunn Mcpherson', 'dunnmcpherson@recrisys.com', '0989894900', b'0', 'ADMIN', '2024-07-01 09:48:33'),
 	(2, 'user2', '202CB962AC59075B964B07152D234B70', 'Foreman Carter', 'foremancarter@recrisys.com', '0993194154', b'0', 'EMPLOYEE', '2024-03-27 14:08:39'),
@@ -1365,7 +1365,7 @@ INSERT INTO `user` (`id`, `username`, `password`, `fullname`, `email`, `phoneNum
 	(1714833219716, 'user11', '202CB962AC59075B964B07152D234B70', 'HIu', 'hh@fm.cm', '0912123123', b'0', 'CUSTOMER', '2024-05-31 06:40:04'),
 	(1714833219717, 'admin', '4297F44B13955235245B2497399D7A93', 'Admin Test', '21130356@st.hcmuaf.edu.vn', '0917294910', b'0', 'ADMIN', '2024-07-01 15:39:47'),
 	(133628511327861887, NULL, NULL, 'Nguyễn Trọng Hải', '21130343@st.hcmuaf.edu.vn', NULL, b'1', 'CUSTOMER', '2024-12-26 10:50:03'),
-	(133797663064144005, NULL, NULL, 'Hai', 'nthai0932169055@gmail.com', NULL, NULL, 'CUSTOMER', '2024-12-27 09:45:06');
+	(133797725905877308, NULL, NULL, 'Hiu', 'hiu2109@gmail.com', NULL, b'0', 'CUSTOMER', '2024-12-27 11:29:50');
 
 -- Dumping structure for table bookshopdb2.voucher
 CREATE TABLE IF NOT EXISTS `voucher` (
