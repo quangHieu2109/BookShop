@@ -382,9 +382,11 @@ namespace BookshopAPI.Controllers
                             email = email,
                             userId = user.id
                         };
+                        await myDbContext.Emails.AddAsync(emailObj);
+                        await myDbContext.SaveChangesAsync();
                     }
-                    await myDbContext.Emails.AddAsync(emailObj);
-                    await myDbContext.SaveChangesAsync();
+
+
                     var accessToken = await generateToken(user);
                     return Ok(responeMessage.response200(accessToken, "Đăng nhập thành công"));
 
