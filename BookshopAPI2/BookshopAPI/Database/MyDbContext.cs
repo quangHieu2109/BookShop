@@ -30,7 +30,9 @@ namespace BookshopAPI.Models
         public DbSet<ProductReview> ProductReviews { get; set; }
         public DbSet<OTP> OPTs {  get; set; }
         public DbSet<GoogleUser> GoogleUsers { get; set; }
-        public DbSet<RefreshToken> RefreshTokens { get; set; }  
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Email> Emails { get; set; }
+
 
     }
 }

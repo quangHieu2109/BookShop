@@ -16,7 +16,7 @@ namespace BookshopAPI.Models
     }
     public class UserRegister : UserLogin
     {
-       
+        public string? uid {  get; set; } 
         public string? email { get; set; }
     
         public string? fullName { get; set; }
@@ -33,8 +33,9 @@ namespace BookshopAPI.Models
         
         public string phoneNumber { get; set; }
         
+        public string uid { get; set; }
         public string email { get; set; }
-       
+
         public int? gender { get; set;}
 
     }
