@@ -2,6 +2,7 @@
 {
     public class Token
     {
+
         public string googleToken { get; set; }
     }
 }
