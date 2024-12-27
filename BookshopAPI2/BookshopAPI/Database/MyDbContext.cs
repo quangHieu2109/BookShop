@@ -32,6 +32,8 @@ namespace BookshopAPI.Models
         public DbSet<GoogleUser> GoogleUsers { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Email> Emails { get; set; }
+        public DbSet<FacebookUser> FacebookUsers { get; set; }
+
 
 
     }

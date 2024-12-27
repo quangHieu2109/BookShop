@@ -7,7 +7,7 @@ namespace BookshopAPI.Database
     public class FacebookUser
     {
         [Key]
-        public long id { get; set; }
+        public string id { get; set; }
         [ForeignKey("userId")]
         public long userId { get; set; }
         public DateTime createAt { get; set; }
