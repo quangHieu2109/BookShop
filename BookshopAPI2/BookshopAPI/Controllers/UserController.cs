@@ -488,7 +488,7 @@ namespace BookshopAPI.Controllers
                                 {
                                     userId = user.id,
                                     email = user.email,
-                                    uid = uid
+                                    uid = facebookUserLogin.uid
                                 };
                                 await myDbContext.Emails.AddAsync(email);
                                 await myDbContext.SaveChangesAsync();
