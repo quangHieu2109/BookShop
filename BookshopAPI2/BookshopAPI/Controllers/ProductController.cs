@@ -34,6 +34,20 @@ namespace BookshopAPI.Controllers
             }
             return Ok(responeMessage.response200(ProductRatings));
         }
+        [HttpGet("getproduct/productId:{productId}")]
+        public async Task<IActionResult> getProductById(long productId)
+        {
+            var product = await myDbContext.Products.SingleOrDefaultAsync(x => x.id == productId);
+            if(product == null)
+            {
+                return Ok(responeMessage.response404(null));
+            }
+            else
+            {
+
+                return Ok(responeMessage.response200(product));
+            }
+        }
         [HttpGet("getWishList")]
         [Authorize]
         public async Task<IActionResult> getWishList()
