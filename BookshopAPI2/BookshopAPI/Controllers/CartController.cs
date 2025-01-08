@@ -148,15 +148,21 @@ namespace BookshopAPI.Controllers
             var cartItem = await myDbContext.CartItems.SingleOrDefaultAsync(x => x.id == id);
             if (cartItem != null)
             {
+                if(cartItem.cartId != cart.id)
+                {
+                    return Ok(responeMessage.response400(null, "CartItem muốn xóa không phải của người dùng hiện tại"));
+                }
                 myDbContext.CartItems.Remove(cartItem);
-                int rs =await myDbContext.SaveChangesAsync();
+                int rs = await myDbContext.SaveChangesAsync();
                 if (rs > 0)
                 {
-                    return Ok(responeMessage.response200);
+                    return Ok(responeMessage.response200(null, "Xóa cartItem thành công"));
                 }
-                return Ok(responeMessage.response500);
+                return Ok(responeMessage.response500(null, "Có lỗi từ server, vui lòng thử lại sau"));
+                
             }
-            return Ok(responeMessage.response400);
+            
+            return Ok(responeMessage.response400(null, "CartItemId không chính xác"));
         }
 
     }
