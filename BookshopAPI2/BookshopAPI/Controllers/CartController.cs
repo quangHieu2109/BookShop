@@ -16,35 +16,50 @@ namespace BookshopAPI.Controllers
     {
         private IConfiguration configuration = new MyDbContextService().GetConfiguration();
         private MyDbContext myDbContext = new MyDbContextService().GetMyDbContext();
-        private ResponeMessage responeMessage = new ResponeMessage();   
-        [HttpGet]
+        private ResponeMessage responeMessage = new ResponeMessage();
+        [HttpGet("orderBy:{typeSort}")]
         [Authorize]
-        public async Task<IActionResult> getCart()
+        public async Task<IActionResult> getCart(int typeSort)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var cart =await myDbContext.Carts.SingleOrDefaultAsync(x => x.userId == userId);
+            var cart = await myDbContext.Carts.SingleOrDefaultAsync(x => x.userId == userId);
+
             if (cart == null)
             {
-                 cart = new Cart
+                cart = new Cart
                 {
                     id = DateTime.Now.ToFileTimeUtc(),
                     userId = userId,
                     createdAt = DateTime.Now
-
                 };
                 await myDbContext.Carts.AddAsync(cart);
                 await myDbContext.SaveChangesAsync();
             }
-            var cartItems =await (from ci in myDbContext.CartItems
-                            where ci.cartId == cart.id
-                            select new CartItemResponse{
-                            id = ci.id,
-                            cartId = ci.cartId,
-                            product = myDbContext.Products.SingleOrDefault(x => x.id == ci.productId),
-                            quantity= ci.quantity,
-                            createdAt = ci.createdAt,
-                            updatedAt = ci.updatedAt
-                            }).ToListAsync();
+
+            var cartItemsQuery = from ci in myDbContext.CartItems
+                                 where ci.cartId == cart.id
+                                 select new CartItemResponse
+                                 {
+                                     id = ci.id,
+                                     cartId = ci.cartId,
+                                     product = myDbContext.Products.SingleOrDefault(x => x.id == ci.productId),
+                                     quantity = ci.quantity,
+                                     createdAt = ci.createdAt,
+                                     updatedAt = ci.updatedAt
+                                 };
+
+            // Apply sorting based on typeSort
+            if (typeSort == 0) // Ascending
+            {
+                cartItemsQuery = cartItemsQuery.OrderBy(ci => ci.createdAt);
+            }
+            else // Descending
+            {
+                cartItemsQuery = cartItemsQuery.OrderByDescending(ci => ci.createdAt);
+            }
+
+            var cartItems = await cartItemsQuery.ToListAsync();
+
             var cartResponse = new CartResponse
             {
                 id = cart.id,
@@ -52,9 +67,9 @@ namespace BookshopAPI.Controllers
                 createdAt = cart.createdAt,
                 updatedAt = cart.updatedAt,
                 CartItems = cartItems
-
             };
-            return Ok(responeMessage.response200(cartResponse)) ;
+
+            return Ok(responeMessage.response200(cartResponse));
         }
         [HttpPost("addCartItemPId:{productId}")]
         [Authorize]
