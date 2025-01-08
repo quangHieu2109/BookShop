@@ -12,39 +12,54 @@ namespace BookshopAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CartController: ControllerBase
+    public class CartController : ControllerBase
     {
         private IConfiguration configuration = new MyDbContextService().GetConfiguration();
         private MyDbContext myDbContext = new MyDbContextService().GetMyDbContext();
-        private ResponeMessage responeMessage = new ResponeMessage();   
-        [HttpGet]
+        private ResponeMessage responeMessage = new ResponeMessage();
+        [HttpGet("orderBy:{typeSort}")]
         [Authorize]
-        public async Task<IActionResult> getCart()
+        public async Task<IActionResult> getCart(int typeSort)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var cart =await myDbContext.Carts.SingleOrDefaultAsync(x => x.userId == userId);
+            var cart = await myDbContext.Carts.SingleOrDefaultAsync(x => x.userId == userId);
+
             if (cart == null)
             {
-                 cart = new Cart
+                cart = new Cart
                 {
                     id = DateTime.Now.ToFileTimeUtc(),
                     userId = userId,
                     createdAt = DateTime.Now
-
                 };
                 await myDbContext.Carts.AddAsync(cart);
                 await myDbContext.SaveChangesAsync();
             }
-            var cartItems =await (from ci in myDbContext.CartItems
-                            where ci.cartId == cart.id
-                            select new CartItemResponse{
-                            id = ci.id,
-                            cartId = ci.cartId,
-                            product = myDbContext.Products.SingleOrDefault(x => x.id == ci.productId),
-                            quantity= ci.quantity,
-                            createdAt = ci.createdAt,
-                            updatedAt = ci.updatedAt
-                            }).ToListAsync();
+
+            var cartItemsQuery = from ci in myDbContext.CartItems
+                                 where ci.cartId == cart.id
+                                 select new CartItemResponse
+                                 {
+                                     id = ci.id,
+                                     cartId = ci.cartId,
+                                     product = myDbContext.Products.SingleOrDefault(x => x.id == ci.productId),
+                                     quantity = ci.quantity,
+                                     createdAt = ci.createdAt,
+                                     updatedAt = ci.updatedAt
+                                 };
+
+            // Apply sorting based on typeSort
+            if (typeSort == 0) // Ascending
+            {
+                cartItemsQuery = cartItemsQuery.OrderBy(ci => ci.createdAt);
+            }
+            else // Descending
+            {
+                cartItemsQuery = cartItemsQuery.OrderByDescending(ci => ci.createdAt);
+            }
+
+            var cartItems = await cartItemsQuery.ToListAsync();
+
             var cartResponse = new CartResponse
             {
                 id = cart.id,
@@ -52,28 +67,28 @@ namespace BookshopAPI.Controllers
                 createdAt = cart.createdAt,
                 updatedAt = cart.updatedAt,
                 CartItems = cartItems
-
             };
-            return Ok(responeMessage.response200(cartResponse)) ;
+
+            return Ok(responeMessage.response200(cartResponse));
         }
         [HttpPost("addCartItemPId:{productId}")]
         [Authorize]
-        public async Task<IActionResult> addCartItemByPId(long productId, int quantity=1)
+        public async Task<IActionResult> addCartItemByPId(long productId, int quantity = 1)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var cart =await myDbContext.Carts.SingleOrDefaultAsync(x => x.userId == userId);
-            var product =await myDbContext.Products.SingleOrDefaultAsync(x => x.id == productId);
+            var cart = await myDbContext.Carts.SingleOrDefaultAsync(x => x.userId == userId);
+            var product = await myDbContext.Products.SingleOrDefaultAsync(x => x.id == productId);
             if (product != null)
             {
-                var cartItem =await myDbContext.CartItems.SingleOrDefaultAsync(x => x.productId == productId && x.cartId == cart.id) ;
-                if(cartItem != null) 
+                var cartItem = await myDbContext.CartItems.SingleOrDefaultAsync(x => x.productId == productId && x.cartId == cart.id);
+                if (cartItem != null)
                 {
                     cartItem.quantity += quantity;
                     await myDbContext.SaveChangesAsync();
                 }
                 else
                 {
-                    cartItem= new CartItem
+                    cartItem = new CartItem
                     {
                         cartId = cart.id,
                         productId = product.id,
@@ -93,10 +108,10 @@ namespace BookshopAPI.Controllers
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
             var cart = await myDbContext.Carts.SingleOrDefaultAsync(x => x.userId == userId);
-            var product =await myDbContext.Products.SingleOrDefaultAsync(x => x.name == productName);
+            var product = await myDbContext.Products.SingleOrDefaultAsync(x => x.name == productName);
             if (product != null)
             {
-                var cartItem =await myDbContext.CartItems.SingleOrDefaultAsync(x => x.productId == product.id && x.cartId == cart.id);
+                var cartItem = await myDbContext.CartItems.SingleOrDefaultAsync(x => x.productId == product.id && x.cartId == cart.id);
                 if (cartItem != null)
                 {
                     cartItem.quantity += quantity;
@@ -111,8 +126,8 @@ namespace BookshopAPI.Controllers
                         quantity = quantity,
                         createdAt = DateTime.Now
                     };
-                   await myDbContext.CartItems.AddAsync(cartItem);
-                   await myDbContext.SaveChangesAsync();
+                    await myDbContext.CartItems.AddAsync(cartItem);
+                    await myDbContext.SaveChangesAsync();
                 }
                 return Ok(responeMessage.response200(cartItem));
             }
@@ -124,12 +139,12 @@ namespace BookshopAPI.Controllers
         public async Task<IActionResult> updateCartItem(long cartItemId, int quantity = 1)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var cart =await myDbContext.Carts.SingleOrDefaultAsync(x => x.userId == userId);
+            var cart = await myDbContext.Carts.SingleOrDefaultAsync(x => x.userId == userId);
             var cartItem = await myDbContext.CartItems.SingleOrDefaultAsync(x => x.id == cartItemId);
             if (cartItem != null)
-            {                          
+            {
                 cartItem.quantity = quantity;
-                int rs =await myDbContext.SaveChangesAsync();
+                int rs = await myDbContext.SaveChangesAsync();
                 if (rs > 0)
                 {
                     return Ok(responeMessage.response200(cartItem));
@@ -148,15 +163,21 @@ namespace BookshopAPI.Controllers
             var cartItem = await myDbContext.CartItems.SingleOrDefaultAsync(x => x.id == id);
             if (cartItem != null)
             {
+                if (cartItem.cartId != cart.id)
+                {
+                    return Ok(responeMessage.response400(null, "CartItem muốn xóa không phải của người dùng hiện tại"));
+                }
                 myDbContext.CartItems.Remove(cartItem);
-                int rs =await myDbContext.SaveChangesAsync();
+                int rs = await myDbContext.SaveChangesAsync();
                 if (rs > 0)
                 {
-                    return Ok(responeMessage.response200);
+                    return Ok(responeMessage.response200(null, "Xóa cartItem thành công"));
                 }
-                return Ok(responeMessage.response500);
+                return Ok(responeMessage.response500(null, "Có lỗi từ server, vui lòng thử lại sau"));
+
             }
-            return Ok(responeMessage.response400);
+
+            return Ok(responeMessage.response400(null, "CartItemId không chính xác"));
         }
 
     }
