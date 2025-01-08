@@ -553,3 +553,7 @@ G:\Code\C#\Book\BookshopAPI2\BookshopAPI\obj\Release\net8.0\refint\BookshopAPI.d
 G:\Code\C#\Book\BookshopAPI2\BookshopAPI\obj\Release\net8.0\BookshopAPI.pdb
 G:\Code\C#\Book\BookshopAPI2\BookshopAPI\obj\Release\net8.0\BookshopAPI.genruntimeconfig.cache
 G:\Code\C#\Book\BookshopAPI2\BookshopAPI\obj\Release\net8.0\ref\BookshopAPI.dll
+G:\Code\C#\Book\BookshopAPI2\BookshopAPI\bin\Release\net8.0\BookshopAPI.staticwebassets.endpoints.json
+G:\Code\C#\Book\BookshopAPI2\BookshopAPI\obj\Release\net8.0\staticwebassets.build.endpoints.json
+G:\Code\C#\Book\BookshopAPI2\BookshopAPI\obj\Release\net8.0\staticwebassets\msbuild.BookshopAPI.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
+G:\Code\C#\Book\BookshopAPI2\BookshopAPI\obj\Release\net8.0\staticwebassets.upToDateCheck.txt

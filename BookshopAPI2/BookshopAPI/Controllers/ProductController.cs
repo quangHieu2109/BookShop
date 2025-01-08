@@ -34,6 +34,20 @@ namespace BookshopAPI.Controllers
             }
             return Ok(responeMessage.response200(ProductRatings));
         }
+        [HttpGet("getproduct/productId:{productId}")]
+        public async Task<IActionResult> getProductById(long productId)
+        {
+            var product = await myDbContext.Products.SingleOrDefaultAsync(x => x.id == productId);
+            if (product == null)
+            {
+                return Ok(responeMessage.response404(null));
+            }
+            else
+            {
+
+                return Ok(responeMessage.response200(product));
+            }
+        }
         [HttpGet("getWishList")]
         [Authorize]
         public async Task<IActionResult> getWishList()
@@ -57,8 +71,8 @@ namespace BookshopAPI.Controllers
 
         }
         [HttpGet("getProductByName")]
-  
-        public async Task<IActionResult> getByName([Required]string name)
+
+        public async Task<IActionResult> getByName([Required] string name)
         {
             long userId = -1;
             if (this.User.FindFirstValue("Id") != null)
@@ -168,8 +182,8 @@ namespace BookshopAPI.Controllers
         [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> deleteProduct([Required] long productId)
         {
-            var product = await myDbContext.Products.FirstOrDefaultAsync(x => x.id ==  productId);
-            if(product != null)
+            var product = await myDbContext.Products.FirstOrDefaultAsync(x => x.id == productId);
+            if (product != null)
             {
                 myDbContext.Remove(product);
                 await myDbContext.SaveChangesAsync();
@@ -185,11 +199,11 @@ namespace BookshopAPI.Controllers
         [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> update([Required] Product product)
         {
-            var _product =await myDbContext.Products.SingleOrDefaultAsync(x => (x.id) == product.id);
+            var _product = await myDbContext.Products.SingleOrDefaultAsync(x => (x.id) == product.id);
             if (_product != null)
             {
                 _product = product;
-                var rs =await myDbContext.SaveChangesAsync();
+                var rs = await myDbContext.SaveChangesAsync();
                 if (rs > 0)
                 {
                     return Ok(responeMessage.response200(_product));
@@ -201,7 +215,7 @@ namespace BookshopAPI.Controllers
             }
             else
             {
-                return Ok(responeMessage.response400(null,"Mã sản phẩm không chính xác"));
+                return Ok(responeMessage.response400(null, "Mã sản phẩm không chính xác"));
             }
 
 
@@ -212,13 +226,13 @@ namespace BookshopAPI.Controllers
         public async Task<IActionResult> AddWishList([Required] long productId)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var wishlist =await myDbContext.WishListItems.SingleOrDefaultAsync(x => x.productId == productId && x.userId == userId);
-            var product =await myDbContext.Products.SingleOrDefaultAsync(x => x.id == productId);
+            var wishlist = await myDbContext.WishListItems.SingleOrDefaultAsync(x => x.productId == productId && x.userId == userId);
+            var product = await myDbContext.Products.SingleOrDefaultAsync(x => x.id == productId);
             if (product == null)
             {
                 return Ok(responeMessage.response400("Mã sản phẩm không chính xác"));
             }
-            
+
             if (wishlist != null)
             {
                 return Ok(responeMessage.response400("Sản phẩm đã có trong danh sách yêu thích"));
@@ -232,14 +246,14 @@ namespace BookshopAPI.Controllers
                     createdAt = DateTime.Now
                 };
                 await myDbContext.WishListItems.AddAsync(wishlist);
-                int rs =await  myDbContext.SaveChangesAsync();
+                int rs = await myDbContext.SaveChangesAsync();
                 if (rs > 0)
                 {
                     return Ok(responeMessage.response200(wishlist));
                 }
                 return Ok(responeMessage.response500);
             }
-            
+
 
         }
 
@@ -248,15 +262,15 @@ namespace BookshopAPI.Controllers
         public async Task<IActionResult> DeleteWishList([Required] long productId)
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            
-            var product =await myDbContext.Products.SingleOrDefaultAsync(x => x.id == productId);
+
+            var product = await myDbContext.Products.SingleOrDefaultAsync(x => x.id == productId);
             if (product == null)
             {
                 return Ok(responeMessage.response400("Mã sản phẩm không chính xác"));
             }
             else
             {
-                var wishlist =await myDbContext.WishListItems.SingleOrDefaultAsync(x => x.productId == productId && x.userId == userId);
+                var wishlist = await myDbContext.WishListItems.SingleOrDefaultAsync(x => x.productId == productId && x.userId == userId);
                 if (wishlist != null)
                 {
                     myDbContext.WishListItems.Remove(wishlist);
@@ -268,17 +282,17 @@ namespace BookshopAPI.Controllers
                     return Ok(responeMessage.response400("Sản phẩm không có trong danh sách yêu thích!"));
                 }
 
-               
+
             }
-            
+
 
         }
         [HttpGet("getByOrderRating")]
         public async Task<IActionResult> getRecommend()
         {
-            var productRatings =await myDbContext.ProductReviews
+            var productRatings = await myDbContext.ProductReviews
                      .GroupBy(pr => pr.productId)
-                     .Select(g => new 
+                     .Select(g => new
                      {
                          Product = myDbContext.Products.Single(x => x.id == g.Key),
                          rating = Math.Round(g.Average(pr => pr.ratingScore), 2)
@@ -291,15 +305,15 @@ namespace BookshopAPI.Controllers
         [HttpGet("getRecommendByOrderRating/productId:{productId}")]
         public async Task<IActionResult> getRecommendByOrderRating([Required] long productId)
         {
-            var category_product =await myDbContext.Product_Categories.SingleOrDefaultAsync(x => x.productId == productId);
-            var productRatings =await myDbContext.ProductReviews
+            var category_product = await myDbContext.Product_Categories.SingleOrDefaultAsync(x => x.productId == productId);
+            var productRatings = await myDbContext.ProductReviews
                      .GroupBy(pr => pr.productId)
-                     .Select(g => new 
+                     .Select(g => new
                      {
                          Product = myDbContext.Products.Single(x => x.id == g.Key),
                          rating = Math.Round(g.Average(pr => pr.ratingScore), 2)
                      })
-                     
+
                      .OrderByDescending(x => x.rating)
                      .Take(10)
                      .ToListAsync();
@@ -317,13 +331,13 @@ namespace BookshopAPI.Controllers
             {
                 userId = long.Parse(this.User.FindFirstValue("Id"));
             }
-            var products =await myDbContext.OrderItems
+            var products = await myDbContext.OrderItems
                      .GroupBy(pr => pr.productId)
-                     .Select(g => new 
+                     .Select(g => new
                      {
                          Product = myDbContext.Products.Single(x => x.id == g.Key),
                          Quantity = g.Sum(pr => pr.quantity),
-                         
+
                      })
                      .OrderByDescending(x => x.Quantity)
                      .Take(10)
@@ -333,8 +347,8 @@ namespace BookshopAPI.Controllers
             {
                 result.Add(new
                 {
-                    product=productRating.GetProductRating(product.Product, userId).Result.Product,
-                    quantity=product.Quantity,
+                    product = productRating.GetProductRating(product.Product, userId).Result.Product,
+                    quantity = product.Quantity,
                     rating = productRating.GetProductRating(product.Product, userId).Result.rating,
                     wishlist = productRating.GetProductRating(product.Product, userId).Result.wishlist
                 });
@@ -350,15 +364,15 @@ namespace BookshopAPI.Controllers
             {
                 userId = long.Parse(this.User.FindFirstValue("Id"));
             }
-            var products =await myDbContext.Products
-                        
+            var products = await myDbContext.Products
+
                      .OrderByDescending(x => x.createdAt)
                      .Take(10)
                      .ToListAsync();
             List<Object> result = new List<Object>();
             foreach (var product in products)
             {
-                result.Add(await productRating.GetProductRating(product, userId ));
+                result.Add(await productRating.GetProductRating(product, userId));
             }
             return Ok(responeMessage.response200(result));
         }
@@ -370,15 +384,15 @@ namespace BookshopAPI.Controllers
             {
                 userId = long.Parse(this.User.FindFirstValue("Id"));
             }
-            var product =await myDbContext.Products
+            var product = await myDbContext.Products
                             .SingleOrDefaultAsync(x => x.id == productId)
                        ;
-            if(product == null)
+            if (product == null)
             {
                 return Ok(responeMessage.response404);
             }
-            var  result = (await productRating.GetProductRating(product, userId));
-            
+            var result = (await productRating.GetProductRating(product, userId));
+
             return Ok(responeMessage.response200(result));
         }
         [HttpGet("getPerchased")]
@@ -386,12 +400,12 @@ namespace BookshopAPI.Controllers
         public async Task<IActionResult> getPerchased()
         {
             long userId = long.Parse(this.User.FindFirstValue("Id"));
-            var orderItemss =await (from o in myDbContext.Orders
-                               join oi in myDbContext.OrderItems on o.id equals oi.orderId
+            var orderItemss = await (from o in myDbContext.Orders
+                                     join oi in myDbContext.OrderItems on o.id equals oi.orderId
 
-                               where o.userId == userId
-                               select oi).ToListAsync();
-            var products =(from oi in orderItemss
+                                     where o.userId == userId
+                                     select oi).ToListAsync();
+            var products = (from oi in orderItemss
                             join p in myDbContext.Products on oi.productId equals p.id
                             select new Product().convert(p))
                             .GroupBy(x => x.id)
@@ -400,13 +414,13 @@ namespace BookshopAPI.Controllers
             List<Object> result = new List<Object>();
             foreach (var product in products)
             {
-                result.Add(await productRating.GetProductRating(product, userId ));
+                result.Add(await productRating.GetProductRating(product, userId));
             }
             return Ok(responeMessage.response200(result));
-           
+
 
 
         }
-        
+
     }
 }

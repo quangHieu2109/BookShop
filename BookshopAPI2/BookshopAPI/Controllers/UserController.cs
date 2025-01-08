@@ -32,6 +32,7 @@ namespace BookshopAPI.Controllers
         private IConfiguration configuration = new MyDbContextService().GetConfiguration();
         private MyDbContext myDbContext = new MyDbContextService().GetMyDbContext();
         private ResponeMessage responeMessage = new ResponeMessage();
+        /** GET*/
 
         [HttpGet("getAllUser")]
         [Authorize(Roles = "ADMIN")]
@@ -50,6 +51,9 @@ namespace BookshopAPI.Controllers
             var user = await myDbContext.Users.SingleOrDefaultAsync(x => x.id == userId);
             return Ok(responeMessage.response200(user));
         }
+
+
+        /*POST*/
 
         [HttpPost("changePassword")]
         [Authorize]

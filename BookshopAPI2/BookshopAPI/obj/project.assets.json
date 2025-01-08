@@ -4810,7 +4810,8 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\GIGABYTE\\.nuget\\packages\\": {}
+    "C:\\Users\\GIGABYTE\\.nuget\\packages\\": {},
+    "E:\\vscodeC+\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
@@ -4821,8 +4822,12 @@
       "packagesPath": "C:\\Users\\GIGABYTE\\.nuget\\packages\\",
       "outputPath": "G:\\Code\\C#\\Book\\BookshopAPI2\\BookshopAPI\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "E:\\vscodeC+\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\GIGABYTE\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\GIGABYTE\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -4846,7 +4851,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "9.0.100"
     },
     "frameworks": {
       "net8.0": {
@@ -4914,7 +4920,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
