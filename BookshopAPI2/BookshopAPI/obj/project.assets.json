@@ -4810,30 +4810,26 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\GIGABYTE\\.nuget\\packages\\": {},
-    "E:\\vscodeC+\\Shared\\NuGetPackages": {}
+    "C:\\Users\\dmx\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "G:\\Code\\C#\\Book\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj",
+      "projectUniqueName": "D:\\Program\\BookShop\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj",
       "projectName": "BookshopAPI",
-      "projectPath": "G:\\Code\\C#\\Book\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj",
-      "packagesPath": "C:\\Users\\GIGABYTE\\.nuget\\packages\\",
-      "outputPath": "G:\\Code\\C#\\Book\\BookshopAPI2\\BookshopAPI\\obj\\",
+      "projectPath": "D:\\Program\\BookShop\\BookshopAPI2\\BookshopAPI\\BookshopAPI.csproj",
+      "packagesPath": "C:\\Users\\dmx\\.nuget\\packages\\",
+      "outputPath": "D:\\Program\\BookShop\\BookshopAPI2\\BookshopAPI\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "E:\\vscodeC+\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\GIGABYTE\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config"
+        "C:\\Users\\dmx\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files\\dotnet\\library-packs": {},
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -4851,8 +4847,7 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.100"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -4920,7 +4915,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.205/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
