@@ -10,6 +10,7 @@ namespace BookshopAPI.Models
     public class Product: ProductRequest
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long id { get; set; }
 
         public DateTime? updatedAt { get; set; }

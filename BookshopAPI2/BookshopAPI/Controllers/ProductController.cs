@@ -196,13 +196,29 @@ namespace BookshopAPI.Controllers
         }
 
         [HttpPut("updateProduct")]
-        [Authorize(Roles = "ADMIN")]
+        /*[Authorize(Roles = "ADMIN")]*/
         public async Task<IActionResult> update([Required] Product product)
         {
             var _product = await myDbContext.Products.SingleOrDefaultAsync(x => (x.id) == product.id);
+           
             if (_product != null)
             {
-                _product = product;
+                _product.name = product.name;
+                _product.author  = product.author;
+                _product.price = product.price;
+                _product.imageName = product.imageName;
+                _product.quantity = product.quantity;
+                _product.discount = product.discount;
+                _product.pages = product.pages;
+                _product.publisher = product.publisher;
+                _product.yearPublishing = product.yearPublishing;
+                _product.description = product.description;
+                _product.shop = product.shop;
+                _product.createdAt = product.createdAt;
+                _product.updatedAt = product.updatedAt;
+                _product.startsAt = product.startsAt;
+                _product.endsAt = product.endsAt;
+
                 var rs = await myDbContext.SaveChangesAsync();
                 if (rs > 0)
                 {
@@ -421,6 +437,21 @@ namespace BookshopAPI.Controllers
 
 
         }
+        [HttpPost("addProduct")]
+        public async Task<IActionResult> addProduct(Product product)
+        {
+           await myDbContext.Products.AddAsync(product);
+            var rs =await myDbContext.SaveChangesAsync();
+            if(rs > 0)
+            {
+                return Ok(responeMessage.response200(product));
+            }
+            else
+            {
+                return Ok(responeMessage.response500);
+            }
+        }
 
+        
     }
 }

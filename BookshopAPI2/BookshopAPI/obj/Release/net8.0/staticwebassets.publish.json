@@ -1,12 +1,11 @@
 {
   "Version": 1,
-  "Hash": "UU/SUMQxHYoNpxZC5C6+kSQBgTCv3WaY1tdzPBkXZvA=",
+  "Hash": "Lb4C+Th4KzqlfNDABIpcYZNtIIlemLr35c5TRW8RJLM=",
   "Source": "BookshopAPI",
   "BasePath": "_content/BookshopAPI",
   "Mode": "Default",
   "ManifestType": "Publish",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": [],
-  "Endpoints": []
+  "Assets": []
 }
