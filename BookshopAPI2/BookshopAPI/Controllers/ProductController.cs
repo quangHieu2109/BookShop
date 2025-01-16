@@ -195,47 +195,7 @@ namespace BookshopAPI.Controllers
             }
         }
 
-        [HttpPut("updateProduct")]
-        /*[Authorize(Roles = "ADMIN")]*/
-        public async Task<IActionResult> update([Required] Product product)
-        {
-            var _product = await myDbContext.Products.SingleOrDefaultAsync(x => (x.id) == product.id);
-           
-            if (_product != null)
-            {
-                _product.name = product.name;
-                _product.author  = product.author;
-                _product.price = product.price;
-                _product.imageName = product.imageName;
-                _product.quantity = product.quantity;
-                _product.discount = product.discount;
-                _product.pages = product.pages;
-                _product.publisher = product.publisher;
-                _product.yearPublishing = product.yearPublishing;
-                _product.description = product.description;
-                _product.shop = product.shop;
-                _product.createdAt = product.createdAt;
-                _product.updatedAt = product.updatedAt;
-                _product.startsAt = product.startsAt;
-                _product.endsAt = product.endsAt;
-
-                var rs = await myDbContext.SaveChangesAsync();
-                if (rs > 0)
-                {
-                    return Ok(responeMessage.response200(_product));
-                }
-                else
-                {
-                    return Ok(responeMessage.response500);
-                }
-            }
-            else
-            {
-                return Ok(responeMessage.response400(null, "Mã sản phẩm không chính xác"));
-            }
-
-
-        }
+        
 
         [HttpPost("addWishList/productId:{productId}")]
         [Authorize]
@@ -438,20 +398,92 @@ namespace BookshopAPI.Controllers
 
         }
         [HttpPost("addProduct")]
-        public async Task<IActionResult> addProduct(Product product)
+        /*[Authorize(Roles = "ADMIN")]*/
+        public async Task<IActionResult> addProduct(ProductUpdate productUpdate)
         {
-           await myDbContext.Products.AddAsync(product);
+            var product = productUpdate.product;
+            product.id = 0;
+             await myDbContext.Products.AddAsync(product);
             var rs =await myDbContext.SaveChangesAsync();
-            if(rs > 0)
+            var productCategory = new Product_Category
             {
-                return Ok(responeMessage.response200(product));
+                categoryId = productUpdate.category.id,
+                productId = productUpdate.product.id,
+            };
+            await myDbContext.Product_Categories.AddAsync(productCategory);
+            await myDbContext.SaveChangesAsync();
+            if (rs > 0)
+            {
+                return Ok(responeMessage.response200(productUpdate));
             }
             else
             {
                 return Ok(responeMessage.response500);
             }
         }
+        [HttpPut("updateProduct")]
+        /*[Authorize(Roles = "ADMIN")]*/
+        public async Task<IActionResult> update([Required] ProductUpdate productUpdate)
+        {
+            var product = productUpdate.product;
+            var _product = await myDbContext.Products.SingleOrDefaultAsync(x => (x.id) == product.id);
 
-        
+            if (_product != null)
+            {
+                if(
+                _product.name != product.name||
+                _product.author!= product.author||
+                _product.price != product.price ||
+                _product.imageName != product.imageName ||
+                _product.quantity != product.quantity ||
+                _product.discount != product.discount ||
+                _product.pages != product.pages ||
+                _product.publisher != product.publisher ||
+                _product.yearPublishing != product.yearPublishing ||
+                _product.description != product.description ||
+                _product.shop != product.shop ||
+                _product.createdAt != product.createdAt ||
+                _product.updatedAt != product.updatedAt ||
+                _product.startsAt != product.startsAt ||
+                _product.endsAt != product.endsAt )
+                {
+                    _product.name = product.name;
+                    _product.author = product.author;
+                    _product.price = product.price;
+                    _product.imageName = product.imageName;
+                    _product.quantity = product.quantity;
+                    _product.discount = product.discount;
+                    _product.pages = product.pages;
+                    _product.publisher = product.publisher;
+                    _product.yearPublishing = product.yearPublishing;
+                    _product.description = product.description;
+                    _product.shop = product.shop;
+                    _product.createdAt = product.createdAt;
+                    _product.updatedAt = product.updatedAt;
+                    _product.startsAt = product.startsAt;
+                    _product.endsAt = product.endsAt;
+                    var rs = await myDbContext.SaveChangesAsync();
+                }
+
+                
+                var productCategory = await myDbContext.Product_Categories.SingleOrDefaultAsync(x => x.productId == product.id);
+                if(productCategory.categoryId != productUpdate.category.id)
+                {
+                    productCategory.categoryId = productUpdate.category.id;
+                    await myDbContext.SaveChangesAsync();
+                }
+                
+                    return Ok(responeMessage.response200(_product));
+               
+            }
+            else
+            {
+                return Ok(responeMessage.response400(null, "Mã sản phẩm không chính xác"));
+            }
+
+
+        }
+
+
     }
 }
